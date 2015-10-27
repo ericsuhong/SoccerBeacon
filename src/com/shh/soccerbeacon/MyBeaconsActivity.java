@@ -1,16 +1,36 @@
 package com.shh.soccerbeacon;
 
+import java.util.ArrayList;
+
+import com.shh.soccerbeacon.adapter.BeaconListAdapter;
+import com.shh.soccerbeacon.dto.BeaconListItem;
+
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 
-public class MyBeaconsActivity extends ActionBarActivity {
-
+public class MyBeaconsActivity extends ActionBarActivity 
+{
+	ListView lvBeaconList;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_mybeacons);
+		
+		lvBeaconList = (ListView) findViewById(R.id.lvBeaconList);
+		
+		BeaconListItem a = new BeaconListItem("AZXS1A");
+		BeaconListItem b = new BeaconListItem("ZCXVAZ");
+		
+		ArrayList<BeaconListItem> beaconList = new ArrayList<BeaconListItem>();
+		beaconList.add(a);
+		beaconList.add(b);
+		
+		BeaconListAdapter beaconListAdapter = new BeaconListAdapter(getApplicationContext(), beaconList);
+		lvBeaconList.setAdapter(beaconListAdapter);
 	}
 
 	@Override
