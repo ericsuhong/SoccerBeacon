@@ -57,6 +57,7 @@ public class BeaconListAdapter extends BaseAdapter {
 		
 			holder = new ViewHolder();
 			holder.tvBeaconId = (TextView) convertView.findViewById(R.id.tvBeaconId);
+			holder.tvBeaconRSSI = (TextView) convertView.findViewById(R.id.tvBeaconRSSI);
 			convertView.setTag(holder);
 		}
 		else 
@@ -65,6 +66,7 @@ public class BeaconListAdapter extends BaseAdapter {
 		}
 
 		holder.tvBeaconId.setText(beaconListItems.get(position).getBeaconId());
+		holder.tvBeaconRSSI.setText("" + beaconListItems.get(position).getRSSI());
 			
 		return convertView;
 	}
@@ -72,6 +74,7 @@ public class BeaconListAdapter extends BaseAdapter {
 	static class ViewHolder 
 	{
 		TextView tvBeaconId;
+		TextView tvBeaconRSSI;
 	}
 
 	public void updateAdapter(ArrayList<BeaconListItem> result)

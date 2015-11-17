@@ -2,6 +2,7 @@ package com.shh.soccerbeacon;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
@@ -23,28 +24,26 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 
-public class MyBeaconsActivity extends ActionBarActivity implements BeaconConsumer
+public class NearbyBeaconsActivity extends ActionBarActivity implements BeaconConsumer
 {
 	private ListView lvBeaconList;
 	private BeaconManager beaconManager;
 	
 	private static String UUID = "f7826da6-4fa2-4e98-8024-bc5b71e0893e";
 	
+	BeaconListAdapter beaconListAdapter;
+	ArrayList<BeaconListItem> beaconList;	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_mybeacons);
+		setContentView(R.layout.activity_nearbybeacons);
 		
 		lvBeaconList = (ListView) findViewById(R.id.lvBeaconList);
 		
-		BeaconListItem a = new BeaconListItem("AZXS1A");
-		BeaconListItem b = new BeaconListItem("ZCXVAZ");
-		
-		ArrayList<BeaconListItem> beaconList = new ArrayList<BeaconListItem>();
-		beaconList.add(a);
-		beaconList.add(b);
-		
-		BeaconListAdapter beaconListAdapter = new BeaconListAdapter(getApplicationContext(), beaconList);
+		beaconList = new ArrayList<BeaconListItem>();
+
+		beaconListAdapter = new BeaconListAdapter(getApplicationContext(), beaconList);
 		lvBeaconList.setAdapter(beaconListAdapter);
 		
 		beaconManager = BeaconManager.getInstanceForApplication(this);
@@ -55,11 +54,12 @@ public class MyBeaconsActivity extends ActionBarActivity implements BeaconConsum
 
 		
 		// scan for new updates every 500 milliseconds
-		beaconManager.setForegroundBetweenScanPeriod(500);
+		// default is 1100 milliseconds...
+		beaconManager.setForegroundScanPeriod(2000);
 		beaconManager.setForegroundBetweenScanPeriod(0);
 		
-		beaconManager.setBackgroundBetweenScanPeriod(500);
-		beaconManager.setForegroundBetweenScanPeriod(0);
+		beaconManager.setBackgroundScanPeriod(2000);
+		beaconManager.setBackgroundBetweenScanPeriod(0);
 		
 		beaconManager.bind(this);
 	}
@@ -95,10 +95,25 @@ public class MyBeaconsActivity extends ActionBarActivity implements BeaconConsum
                 {
             		Log.i("BEACON", "Beacon SIZE: " + beacons.size());
             		
+            		beaconList = new ArrayList<BeaconListItem>();
+            		
                 	for (Beacon current_beacon : beacons)
                 	{
-                		Log.i("BEACON", "Beacon ID1: " + current_beacon.getId1() + " ID2: " + current_beacon.getId2() + " RSSI: " + current_beacon.getRssi());
-                	}
+                		Log.i("BEACON", "Beacon ID1: " + current_beacon.getId1() + " ID2: " + current_beacon.getId2() + " ID3: " + current_beacon.getBluetoothName() + " RSSI: " + current_beacon.getRssi());
+                		                		
+                		BeaconListItem beacon_item = new BeaconListItem(current_beacon.getBluetoothName(), current_beacon.getRssi());
+                		
+                		beaconList.add(beacon_item);
+                	}           
+                	
+                	// sort by RSSI
+                	Collections.sort(beaconList);
+                	
+            		runOnUiThread(new Runnable() {
+            		     @Override
+            		     public void run() {	
+            		    	 beaconListAdapter.updateAdapter(beaconList);
+            		     }});
                 }
             }
         });

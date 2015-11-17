@@ -29,9 +29,9 @@ public class MainActivity extends ActionBarActivity {
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-		if (id == R.id.action_mybeacons) 
+		if (id == R.id.action_nearbybeacons) 
 		{
-			Intent intent = new Intent(this, MyBeaconsActivity.class);
+			Intent intent = new Intent(this, NearbyBeaconsActivity.class);
 			startActivity(intent);
 			    
 			return true;

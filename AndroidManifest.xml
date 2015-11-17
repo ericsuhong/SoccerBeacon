@@ -22,8 +22,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MyBeaconsActivity"
-            android:label="My Beacons"
+            android:name=".NearbyBeaconsActivity"
+            android:label="Nearby Beacons"
             android:parentActivityName="com.shh.soccerbeacon.MainActivity"
             android:screenOrientation="landscape" >
             <!-- Parent activity meta-data to support 4.0 and lower -->
