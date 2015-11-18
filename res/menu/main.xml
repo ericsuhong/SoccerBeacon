@@ -8,10 +8,10 @@
         android:orderInCategory="100"
         android:title="@string/action_beacons"
         app:showAsAction="ifRoom"/>
-    
+
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_calibration"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
+        android:title="@string/action_calibration"
         app:showAsAction="ifRoom"/>
 </menu>

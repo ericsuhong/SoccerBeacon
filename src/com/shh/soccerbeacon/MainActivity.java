@@ -36,6 +36,14 @@ public class MainActivity extends ActionBarActivity {
 			    
 			return true;
 		}
+		else if (id == R.id.action_calibration) 
+		{
+			Intent intent = new Intent(this, CalibrationActivity.class);
+			startActivity(intent);
+			    
+			return true;
+		}
+		
 		return super.onOptionsItemSelected(item);
 	}
 }
