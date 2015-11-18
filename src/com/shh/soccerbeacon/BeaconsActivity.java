@@ -22,11 +22,14 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
-public class NearbyBeaconsActivity extends ActionBarActivity implements BeaconConsumer
+public class BeaconsActivity extends ActionBarActivity implements BeaconConsumer
 {
 	private ListView lvBeaconList;
+	private ProgressBar progressBar;
 	private BeaconManager beaconManager;
 	
 	private static String UUID = "f7826da6-4fa2-4e98-8024-bc5b71e0893e";
@@ -39,6 +42,7 @@ public class NearbyBeaconsActivity extends ActionBarActivity implements BeaconCo
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_nearbybeacons);
 		
+		progressBar = (ProgressBar) findViewById(R.id.progressBar);		
 		lvBeaconList = (ListView) findViewById(R.id.lvBeaconList);
 		
 		beaconList = new ArrayList<BeaconListItem>();
@@ -87,15 +91,15 @@ public class NearbyBeaconsActivity extends ActionBarActivity implements BeaconCo
 	public void onBeaconServiceConnect() {
 		beaconManager.setRangeNotifier(new RangeNotifier() {
             @Override 
-            public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
-              
+            public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) 
+            {              
         		Log.i("BEACON", "Beacon STARTED with size: " + beacons.size());
+        		
+        		beaconList = new ArrayList<BeaconListItem>();
         		
             	if (beacons.size() > 0) 
                 {
-            		Log.i("BEACON", "Beacon SIZE: " + beacons.size());
-            		
-            		beaconList = new ArrayList<BeaconListItem>();
+            		Log.i("BEACON", "Beacon SIZE: " + beacons.size());            		
             		
                 	for (Beacon current_beacon : beacons)
                 	{
@@ -111,10 +115,22 @@ public class NearbyBeaconsActivity extends ActionBarActivity implements BeaconCo
                 	
             		runOnUiThread(new Runnable() {
             		     @Override
-            		     public void run() {	
+            		     public void run() {
+            		    	 progressBar.setVisibility(View.GONE);
+            		    	 lvBeaconList.setVisibility(View.VISIBLE);
             		    	 beaconListAdapter.updateAdapter(beaconList);
             		     }});
                 }
+            	else
+            	{
+            		runOnUiThread(new Runnable() {
+           		     @Override
+           		     public void run() {
+           		    	 progressBar.setVisibility(View.VISIBLE);
+           		    	 lvBeaconList.setVisibility(View.GONE);
+           		    	 beaconListAdapter.updateAdapter(beaconList);
+           		     }});
+            	}
             }
         });
 

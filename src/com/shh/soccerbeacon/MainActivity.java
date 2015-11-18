@@ -31,7 +31,7 @@ public class MainActivity extends ActionBarActivity {
 		int id = item.getItemId();
 		if (id == R.id.action_nearbybeacons) 
 		{
-			Intent intent = new Intent(this, NearbyBeaconsActivity.class);
+			Intent intent = new Intent(this, BeaconsActivity.class);
 			startActivity(intent);
 			    
 			return true;

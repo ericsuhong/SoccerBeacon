@@ -3,7 +3,7 @@
 
     <string name="app_name">SoccerBeacon</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_nearbybeacons">Nearby Beacons</string>
+    <string name="action_beacons">Beacons</string>
     <string name="action_settings">Settings</string>
 
 </resources>

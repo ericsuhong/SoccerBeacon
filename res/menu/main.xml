@@ -6,7 +6,7 @@
     <item
         android:id="@+id/action_nearbybeacons"
         android:orderInCategory="100"
-        android:title="@string/action_nearbybeacons"
+        android:title="@string/action_beacons"
         app:showAsAction="ifRoom"/>
     
     <item
