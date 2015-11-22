@@ -1,30 +1,44 @@
 package com.shh.soccerbeacon;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 
+import org.json.JSONArray;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.shh.soccerbeacon.adapter.BeaconLocationsListAdapter;
 import com.shh.soccerbeacon.dto.BeaconLocationItem;
 import com.shh.soccerbeacon.dto.FieldData;
 
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 
 public class BeaconLocationsActivity extends ActionBarActivity
 {	
 	Context mContext;
 	
+	ArrayList<BeaconLocationItem> beaconLocationsList;
+	
 	private ListView lvBeaconLocations;
 	BeaconLocationsListAdapter beaconLocationsListAdapter;
 	EditText etXpos, etYpos;
 	Button btnAddBeacon;	
-	
+		
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
@@ -38,6 +52,13 @@ public class BeaconLocationsActivity extends ActionBarActivity
 		etXpos = (EditText) findViewById(R.id.etXpos);
 		etYpos = (EditText) findViewById(R.id.etYpos);		
 		
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+		String beaconLocationsJSON = sharedPref.getString("BeaconLocations", "[]");
+			
+		Gson gson = new Gson();
+		Type collectionType = new TypeToken<Collection<BeaconLocationItem>>(){}.getType();
+		beaconLocationsList = (ArrayList<BeaconLocationItem>) gson.fromJson(beaconLocationsJSON, collectionType);
+		
 		/*
 		BeaconLocationItem item = new BeaconLocationItem(10,20, "HELLO", 3901, 19349, -30);
 		beaconLocationsList.add(item);
@@ -49,7 +70,7 @@ public class BeaconLocationsActivity extends ActionBarActivity
 		beaconLocationsList.add(item);
 		beaconLocationsList.add(item);*/
 		
-		beaconLocationsListAdapter = new BeaconLocationsListAdapter(BeaconLocationsActivity.this, FieldData.beaconLocationsList);
+		beaconLocationsListAdapter = new BeaconLocationsListAdapter(BeaconLocationsActivity.this, beaconLocationsList);
 		lvBeaconLocations.setAdapter(beaconLocationsListAdapter);
 		
 		btnAddBeacon.setOnClickListener(new OnClickListener(){
@@ -86,9 +107,9 @@ public class BeaconLocationsActivity extends ActionBarActivity
 					return;
 				}
 				
-				for (int i = 0; i < FieldData.beaconLocationsList.size(); i++)
+				for (int i = 0; i < beaconLocationsList.size(); i++)
 				{
-					if (FieldData.beaconLocationsList.get(i).getX() == xPos_int && FieldData.beaconLocationsList.get(i).getY() == yPos_int)
+					if (beaconLocationsList.get(i).getX() == xPos_int && beaconLocationsList.get(i).getY() == yPos_int)
 					{
 						etXpos.setError("Duplicate coordinates");
 						return;
@@ -101,15 +122,28 @@ public class BeaconLocationsActivity extends ActionBarActivity
 				intent.putExtra("yPos", yPos_int);
 				
 				// in order to not show already added beacons...
-				for (int i = 0; i < FieldData.beaconLocationsList.size(); i++)
+				for (int i = 0; i < beaconLocationsList.size(); i++)
 				{
-					String majorminor = FieldData.beaconLocationsList.get(i).getMajor() + "-" + FieldData.beaconLocationsList.get(i).getMinor();
+					String majorminor = beaconLocationsList.get(i).getMajor() + "-" + beaconLocationsList.get(i).getMinor();
 					intent.putExtra(majorminor, "true");
 				}
 				
 				startActivityForResult(intent, 1);				    
 			}
 		});
+	}
+	
+	@Override
+	protected void onDestroy()
+	{
+		super.onDestroy();
+		
+		String beaconLocationsJSON = new Gson().toJson(beaconLocationsList);
+		
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences.Editor editor = sharedPref.edit();
+		editor.putString("BeaconLocations", beaconLocationsJSON);
+		editor.commit();
 	}
 	
 	@Override
@@ -124,9 +158,9 @@ public class BeaconLocationsActivity extends ActionBarActivity
 	        	int beaconMinor = data.getIntExtra("beaconMinor", -1);
 	        	
 	        	BeaconLocationItem item = new BeaconLocationItem(xPos, yPos, beaconName, beaconMajor, beaconMinor, -1);
-	        	FieldData.beaconLocationsList.add(item);
+	        	beaconLocationsList.add(item);
 	        	
-	        	Collections.sort(FieldData.beaconLocationsList);
+	        	Collections.sort(beaconLocationsList);
 
 	        	beaconLocationsListAdapter.notifyDataSetChanged();
 	        }

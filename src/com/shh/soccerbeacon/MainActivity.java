@@ -14,13 +14,24 @@ public class MainActivity extends ActionBarActivity
 {
 	private Context mContext;
 	private Button btnSetBeaconLocations;
+	private Button btnSetFieldDimensions;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
 		mContext = this;
-
-		setContentView(R.layout.activity_main);	
+		setContentView(R.layout.activity_main);
+		
+		btnSetFieldDimensions = (Button) findViewById(R.id.btnSetFieldDimensions);
+		
+		btnSetFieldDimensions.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(mContext, FieldDimensionsActivity.class);
+				startActivity(intent);
+			}
+		});
 		
 		btnSetBeaconLocations = (Button) findViewById(R.id.btnSetBeaconLocations);
 		btnSetBeaconLocations.setOnClickListener(new OnClickListener(){
