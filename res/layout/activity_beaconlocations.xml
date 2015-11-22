@@ -1,21 +1,57 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
 
     <ListView
         android:id="@+id/lvBeaconLocations"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/btnAddBeacon" >
+        android:layout_above="@+id/lvAddBeacon"
+        android:focusable="true" 
+        android:focusableInTouchMode="true">
     </ListView>
 
-    <Button
-        android:id="@+id/btnAddBeacon"
-        android:layout_margin="3dp"
+    <LinearLayout
+        android:id="@+id/lvAddBeacon"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:text="Add Beacon" />
-    
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+           <EditText
+               android:id="@+id/etXpos"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_weight="1"
+               android:ems="10"
+               android:inputType="number" 
+               android:hint="Enter X coordinate" >
+            </EditText>
+            
+            <EditText
+                android:id="@+id/etYpos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10" 
+                android:inputType="number" 
+                android:hint="Enter Y coordinate">
+            </EditText>
+
+        </LinearLayout>
+        
+	    <Button
+	        android:id="@+id/btnAddBeacon"
+	        android:layout_margin="3dp"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="Add Beacon" />
+    </LinearLayout>    
 </RelativeLayout>

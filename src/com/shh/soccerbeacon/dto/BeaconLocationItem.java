@@ -4,23 +4,27 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 {
 	private int xPos;
 	private int yPos;
-	private String beaconId;
+	private String beaconName;
 	private int major;
 	private int minor;
 	private int RSSI;
 	
-	public BeaconLocationItem(String beaconId, int RSSI)
+	public BeaconLocationItem(int xPos, int yPos, String beaconName, int major, int minor, int RSSI)
 	{
-		this.beaconId = beaconId;
+		this.xPos = xPos;
+		this.yPos = yPos;
+		this.beaconName = beaconName;
+		this.major = major;
+		this.minor = minor;
 		this.RSSI = RSSI;
 	}
 
-	public String getBeaconId() {
-		return beaconId;
+	public String getBeaconName() {
+		return beaconName;
 	}
 
-	public void setBeaconId(String beaconId) {
-		this.beaconId = beaconId;
+	public void setBeaconId(String beaconName) {
+		this.beaconName = beaconName;
 	}
 	
 	public int getRSSI() {
@@ -46,15 +50,41 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 	public void setMinor(int minor) {
 		this.minor = minor;
 	}
+	
+	public int getX() {
+		return xPos;
+	}
+
+	public void setX(int xPos) {
+		this.xPos = xPos;
+	}
+
+	public int getY() {
+		return yPos;
+	}
+
+	public void setY(int yPos) {
+		this.yPos = yPos;
+	}
 
 	@Override
 	public int compareTo(BeaconLocationItem target) {
-		// sort by descending RSSI order
-		if (this.RSSI < target.RSSI)
+		if (this.xPos > target.xPos)
+		{
 			return 1;
-		else if (this.RSSI == target.RSSI)
-			return 0;
+		}
+		else if (this.xPos == target.xPos)
+		{
+			if (this.yPos > target.yPos)
+				return 1;
+			else if (this.yPos == target.yPos)
+				return 0;
+			else
+				return -1;
+		}
 		else
+		{
 			return -1;
+		}
 	}
 }

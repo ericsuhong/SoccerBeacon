@@ -17,6 +17,7 @@ import com.shh.soccerbeacon.adapter.BeaconListAdapter;
 import com.shh.soccerbeacon.dto.BeaconListItem;
 
 import android.support.v7.app.ActionBarActivity;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
@@ -41,42 +42,48 @@ public class BeaconsActivity extends ActionBarActivity implements BeaconConsumer
 	private ProgressBar progressBar;
 	private BeaconManager beaconManager;
 	
-	private static String UUID = "f7826da6-4fa2-4e98-8024-bc5b71e0893e";
-	
 	BeaconListAdapter beaconListAdapter;
 	ArrayList<BeaconListItem> beaconList;
-	
+		
 	boolean clickable;
+	
+	Intent intent;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_beacons);
 			
-		progressBar = (ProgressBar) findViewById(R.id.progressBar);		
+		progressBar = (ProgressBar) findViewById(R.id.progressBar);
 		lvBeaconList = (ListView) findViewById(R.id.lvBeaconList);
 		
-		Intent intent = getIntent();
+		intent = getIntent();
 		clickable = intent.getBooleanExtra("clickable", false);
+		
+		final int xPos = intent.getIntExtra("xPos", -1);
+		final int yPos = intent.getIntExtra("yPos", -1);
 				
 		lvBeaconList.setOnItemClickListener(new OnItemClickListener(){
 			@Override
-			public void onItemClick(AdapterView<?> arg0, View v, int arg2,
-					long arg3) {				
+			public void onItemClick(AdapterView<?> arg0, View v, int arg2, long arg3) {				
 				if (clickable)
 				{
 					TextView tvBeaconName = (TextView) v.findViewById(R.id.tvBeaconName);
+					TextView tvBeaconMajor = (TextView) v.findViewById(R.id.tvBeaconMajor);
+					TextView tvBeaconMinor = (TextView) v.findViewById(R.id.tvBeaconMinor);
 					
-					AlertDialog alertDialog = new AlertDialog.Builder(BeaconsActivity.this).create();
-					alertDialog.setTitle("Alert");
-					alertDialog.setMessage(tvBeaconName.getText());
-					alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-					    new DialogInterface.OnClickListener() {
-					        public void onClick(DialogInterface dialog, int which) {
-					            dialog.dismiss();
-					        }
-					    });
-					alertDialog.show();					
+					String name = tvBeaconName.getText().toString();
+					int major = Integer.parseInt(tvBeaconMajor.getText().toString());
+					int minor = Integer.parseInt(tvBeaconMinor.getText().toString());
+					
+					Intent returnIntent = new Intent();
+					returnIntent.putExtra("xPos", xPos);
+					returnIntent.putExtra("yPos", yPos);
+					returnIntent.putExtra("beaconName", name);
+					returnIntent.putExtra("beaconMajor", major);
+					returnIntent.putExtra("beaconMinor", minor);
+					setResult(Activity.RESULT_OK, returnIntent);
+					finish();
 				}
 			}});
 		
@@ -158,20 +165,24 @@ public class BeaconsActivity extends ActionBarActivity implements BeaconConsumer
         		
             	if (beacons.size() > 0) 
                 {
-            		Log.i("BEACON", "Beacon SIZE: " + beacons.size());            		
+            		//Log.i("BEACON", "Beacon SIZE: " + beacons.size());            		
             		
                 	for (Beacon current_beacon : beacons)
                 	{
-                		Log.i("BEACON", "Beacon ID1: " + current_beacon.getId1() + " ID2: " + current_beacon.getId2() + " ID3: " + current_beacon.getBluetoothName() + " RSSI: " + current_beacon.getRssi());
-                		                		
-                		String beaconName = current_beacon.getBluetoothName();
+                		//Log.i("BEACON", "Beacon ID1: " + current_beacon.getId1() + " ID2: " + current_beacon.getId2() + " ID3: " + current_beacon.getBluetoothName() + " RSSI: " + current_beacon.getRssi());
+                   		String beaconName = current_beacon.getBluetoothName();
                 		int major = current_beacon.getId2().toInt();
                 		int minor = current_beacon.getId3().toInt();
                 		int rssi = current_beacon.getRssi();
                 		
-                		BeaconListItem beacon_item = new BeaconListItem(beaconName, major, minor, rssi);
+                		String majorminor = major + "-" + minor;
                 		
-                		beaconList.add(beacon_item);
+                		// do not show "already-added" beacons
+                		if (intent.getExtras().get(majorminor) == null)
+                		{
+                			BeaconListItem beacon_item = new BeaconListItem(beaconName, major, minor, rssi);
+                			beaconList.add(beacon_item);
+                		}
                 	}           
                 	
                 	// sort by RSSI
