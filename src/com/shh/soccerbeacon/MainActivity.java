@@ -1,17 +1,35 @@
 package com.shh.soccerbeacon;
 
 import android.support.v7.app.ActionBarActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity 
+{
+	private Context mContext;
+	private Button btnSetBeaconLocations;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);		
+		mContext = this;
+
+		setContentView(R.layout.activity_main);	
+		
+		btnSetBeaconLocations = (Button) findViewById(R.id.btnSetBeaconLocations);
+		btnSetBeaconLocations.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(mContext, BeaconLocationsActivity.class);
+				startActivity(intent);
+			}
+		});
 	}
 
 	@Override

@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-public class BeaconListAdapter extends BaseAdapter {
+public class BeaconLocationsListAdapter extends BaseAdapter {
 
 	public static ArrayList<BeaconListItem> beaconListItems = null;
 
@@ -23,7 +23,7 @@ public class BeaconListAdapter extends BaseAdapter {
 	LayoutInflater mInflater;
 	Resources localResources;
 
-	public BeaconListAdapter(Context context, ArrayList<BeaconListItem> list) 
+	public BeaconLocationsListAdapter(Context context, ArrayList<BeaconListItem> list) 
 	{
 		mContext = context;
 		beaconListItems = list;
@@ -50,34 +50,13 @@ public class BeaconListAdapter extends BaseAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 
 		ViewHolder holder;
-		
-		if (convertView == null) 
-		{
-			convertView = vi.inflate(R.layout.row_beaconinfo, null);
-		
-			holder = new ViewHolder();
-			holder.tvBeaconName = (TextView) convertView.findViewById(R.id.tvBeaconName);
-			holder.tvBeaconMajor = (TextView) convertView.findViewById(R.id.tvBeaconMajor);
-			holder.tvBeaconMinor = (TextView) convertView.findViewById(R.id.tvBeaconMinor);
-			holder.tvBeaconRSSI = (TextView) convertView.findViewById(R.id.tvBeaconRSSI);
-			convertView.setTag(holder);
-		}
-		else 
-		{
-			holder = (ViewHolder) convertView.getTag();
-		}
-
-		holder.tvBeaconName.setText(beaconListItems.get(position).getBeaconName());
-		holder.tvBeaconMajor.setText("" + beaconListItems.get(position).getMajor());
-		holder.tvBeaconMinor.setText("" + beaconListItems.get(position).getMinor());
-		holder.tvBeaconRSSI.setText("" + beaconListItems.get(position).getRSSI());
-			
+					
 		return convertView;
 	}
 
 	static class ViewHolder 
 	{
-		TextView tvBeaconName;
+		TextView tvBeaconId;
 		TextView tvBeaconMajor;
 		TextView tvBeaconMinor;
 		TextView tvBeaconRSSI;

@@ -65,11 +65,11 @@ public class BeaconsActivity extends ActionBarActivity implements BeaconConsumer
 					long arg3) {				
 				if (clickable)
 				{
-					TextView tvBeaconId = (TextView) v.findViewById(R.id.tvBeaconId);
+					TextView tvBeaconName = (TextView) v.findViewById(R.id.tvBeaconName);
 					
 					AlertDialog alertDialog = new AlertDialog.Builder(BeaconsActivity.this).create();
 					alertDialog.setTitle("Alert");
-					alertDialog.setMessage(tvBeaconId.getText());
+					alertDialog.setMessage(tvBeaconName.getText());
 					alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
 					    new DialogInterface.OnClickListener() {
 					        public void onClick(DialogInterface dialog, int which) {
@@ -90,6 +90,11 @@ public class BeaconsActivity extends ActionBarActivity implements BeaconConsumer
 	protected void onStart()
 	{
 		super.onStart();
+		
+		beaconList = new ArrayList<BeaconListItem>();
+		progressBar.setVisibility(View.VISIBLE);
+	    lvBeaconList.setVisibility(View.GONE);
+	    beaconListAdapter.updateAdapter(beaconList);
 		
 		BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 		
@@ -159,7 +164,12 @@ public class BeaconsActivity extends ActionBarActivity implements BeaconConsumer
                 	{
                 		Log.i("BEACON", "Beacon ID1: " + current_beacon.getId1() + " ID2: " + current_beacon.getId2() + " ID3: " + current_beacon.getBluetoothName() + " RSSI: " + current_beacon.getRssi());
                 		                		
-                		BeaconListItem beacon_item = new BeaconListItem(current_beacon.getBluetoothName(), current_beacon.getRssi());
+                		String beaconName = current_beacon.getBluetoothName();
+                		int major = current_beacon.getId2().toInt();
+                		int minor = current_beacon.getId3().toInt();
+                		int rssi = current_beacon.getRssi();
+                		
+                		BeaconListItem beacon_item = new BeaconListItem(beaconName, major, minor, rssi);
                 		
                 		beaconList.add(beacon_item);
                 	}           

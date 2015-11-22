@@ -1,26 +1,26 @@
 package com.shh.soccerbeacon.dto;
 
-public class BeaconListItem implements Comparable<BeaconListItem>
+public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 {
-	private String beaconName;
+	private int xPos;
+	private int yPos;
+	private String beaconId;
 	private int major;
 	private int minor;
 	private int RSSI;
 	
-	public BeaconListItem(String beaconId, int major, int minor, int RSSI)
+	public BeaconLocationItem(String beaconId, int RSSI)
 	{
-		this.beaconName = beaconId;
-		this.major = major;
-		this.minor = minor;
+		this.beaconId = beaconId;
 		this.RSSI = RSSI;
 	}
 
-	public String getBeaconName() {
-		return beaconName;
+	public String getBeaconId() {
+		return beaconId;
 	}
 
-	public void setBeaconName(String beaconName) {
-		this.beaconName = beaconName;
+	public void setBeaconId(String beaconId) {
+		this.beaconId = beaconId;
 	}
 	
 	public int getRSSI() {
@@ -48,7 +48,7 @@ public class BeaconListItem implements Comparable<BeaconListItem>
 	}
 
 	@Override
-	public int compareTo(BeaconListItem target) {
+	public int compareTo(BeaconLocationItem target) {
 		// sort by descending RSSI order
 		if (this.RSSI < target.RSSI)
 			return 1;
