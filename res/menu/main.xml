@@ -4,7 +4,7 @@
     tools:context="com.shh.soccerbeacon.MainActivity" >
 
     <item
-        android:id="@+id/action_nearbybeacons"
+        android:id="@+id/action_beacons"
         android:orderInCategory="100"
         android:title="@string/action_beacons"
         app:showAsAction="ifRoom"/>

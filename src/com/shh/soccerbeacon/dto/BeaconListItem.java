@@ -3,6 +3,8 @@ package com.shh.soccerbeacon.dto;
 public class BeaconListItem implements Comparable<BeaconListItem>
 {
 	private String beaconId;
+	private int major;
+	private int minor;
 	private int RSSI;
 	
 	public BeaconListItem(String beaconId, int RSSI)
@@ -25,6 +27,22 @@ public class BeaconListItem implements Comparable<BeaconListItem>
 	
 	public void setRSSI(int RSSI) {
 		this.RSSI = RSSI;
+	}
+	
+	public int getMajor() {
+		return major;
+	}
+
+	public void setMajor(int major) {
+		this.major = major;
+	}
+
+	public int getMinor() {
+		return minor;
+	}
+
+	public void setMinor(int minor) {
+		this.minor = minor;
 	}
 
 	@Override

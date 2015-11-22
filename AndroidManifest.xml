@@ -24,23 +24,17 @@
         <activity
             android:name=".BeaconsActivity"
             android:label="Beacons"
-            android:parentActivityName="com.shh.soccerbeacon.MainActivity"
             android:screenOrientation="portrait" >
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-	        <meta-data
-	            android:name="android.support.PARENT_ACTIVITY"
-	            android:value="com.shh.soccerbeacon.MainActivity" />
         </activity>
         <activity
             android:name=".CalibrationActivity"
             android:label="Calibration"
-            android:parentActivityName="com.shh.soccerbeacon.MainActivity"
             android:screenOrientation="portrait" >
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-	        <meta-data
-	            android:name="android.support.PARENT_ACTIVITY"
-	            android:value="com.shh.soccerbeacon.MainActivity" />
+        </activity>
+        <activity
+            android:name=".BeaconLocationsActivity"
+            android:label="BeaconLocations"
+            android:screenOrientation="portrait" >
         </activity>
     </application>
-
 </manifest>

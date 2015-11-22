@@ -74,6 +74,8 @@ public class BeaconListAdapter extends BaseAdapter {
 	static class ViewHolder 
 	{
 		TextView tvBeaconId;
+		TextView tvBeaconMajor;
+		TextView tvBeaconMinor;
 		TextView tvBeaconRSSI;
 	}
 

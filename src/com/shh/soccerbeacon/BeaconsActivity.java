@@ -17,7 +17,9 @@ import com.shh.soccerbeacon.adapter.BeaconListAdapter;
 import com.shh.soccerbeacon.dto.BeaconListItem;
 
 import android.support.v7.app.ActionBarActivity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -25,8 +27,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class BeaconsActivity extends ActionBarActivity implements BeaconConsumer
 {
@@ -37,15 +44,41 @@ public class BeaconsActivity extends ActionBarActivity implements BeaconConsumer
 	private static String UUID = "f7826da6-4fa2-4e98-8024-bc5b71e0893e";
 	
 	BeaconListAdapter beaconListAdapter;
-	ArrayList<BeaconListItem> beaconList;	
+	ArrayList<BeaconListItem> beaconList;
+	
+	boolean clickable;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_beacons);
-		
+			
 		progressBar = (ProgressBar) findViewById(R.id.progressBar);		
 		lvBeaconList = (ListView) findViewById(R.id.lvBeaconList);
+		
+		Intent intent = getIntent();
+		clickable = intent.getBooleanExtra("clickable", false);
+				
+		lvBeaconList.setOnItemClickListener(new OnItemClickListener(){
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View v, int arg2,
+					long arg3) {				
+				if (clickable)
+				{
+					TextView tvBeaconId = (TextView) v.findViewById(R.id.tvBeaconId);
+					
+					AlertDialog alertDialog = new AlertDialog.Builder(BeaconsActivity.this).create();
+					alertDialog.setTitle("Alert");
+					alertDialog.setMessage(tvBeaconId.getText());
+					alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+					    new DialogInterface.OnClickListener() {
+					        public void onClick(DialogInterface dialog, int which) {
+					            dialog.dismiss();
+					        }
+					    });
+					alertDialog.show();					
+				}
+			}});
 		
 		beaconList = new ArrayList<BeaconListItem>();
 

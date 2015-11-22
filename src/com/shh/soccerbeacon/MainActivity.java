@@ -1,7 +1,5 @@
 package com.shh.soccerbeacon;
 
-import org.altbeacon.beacon.BeaconManager;
-
 import android.support.v7.app.ActionBarActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -29,9 +27,10 @@ public class MainActivity extends ActionBarActivity {
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-		if (id == R.id.action_nearbybeacons) 
+		if (id == R.id.action_beacons) 
 		{
 			Intent intent = new Intent(this, BeaconsActivity.class);
+			intent.putExtra("clickable", false); // "standalone" beacon ranging mode. Cannot click on beacon list
 			startActivity(intent);
 			    
 			return true;
