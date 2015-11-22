@@ -2,13 +2,16 @@ package com.shh.soccerbeacon.adapter;
 
 import java.util.ArrayList;
 
+import com.google.gson.Gson;
 import com.shh.soccerbeacon.R;
 import com.shh.soccerbeacon.dto.BeaconLocationItem;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -88,20 +91,15 @@ public class BeaconLocationsListAdapter extends BaseAdapter {
 			@Override
 			public void onClick(View arg0) 
 			{
-				new AlertDialog.Builder(mContext)
-			    .setTitle("Delete")
-			    .setMessage("Delete beacon location (" + xPos + ", " + yPos + ")?")
-			    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-			        public void onClick(DialogInterface dialog, int which) {						
-						beaconLocationListItems.remove(position);
-						notifyDataSetChanged();
-			        }
-			     })
-			    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-			        public void onClick(DialogInterface dialog, int which) { 
-			        }
-			     })
-			     .show();
+				beaconLocationListItems.remove(position);
+				notifyDataSetChanged();
+				
+				String beaconLocationsJSON = new Gson().toJson(beaconLocationListItems);
+	    		
+	    		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+	    		SharedPreferences.Editor editor = sharedPref.edit();
+	    		editor.putString("BeaconLocations", beaconLocationsJSON);
+	    		editor.commit();
 			}			
 		});
 			

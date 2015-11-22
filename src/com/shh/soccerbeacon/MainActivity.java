@@ -1,13 +1,25 @@
 package com.shh.soccerbeacon;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.shh.soccerbeacon.dto.BeaconLocationItem;
+
 import android.support.v7.app.ActionBarActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 
 public class MainActivity extends ActionBarActivity 
@@ -16,6 +28,9 @@ public class MainActivity extends ActionBarActivity
 	private Button btnSetBeaconLocations;
 	private Button btnSetFieldDimensions;
 
+	private Button btnStart;
+	private Button btnTest;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -41,6 +56,48 @@ public class MainActivity extends ActionBarActivity
 				startActivity(intent);
 			}
 		});
+		
+		btnStart = (Button) findViewById(R.id.btnStart);
+		btnTest = (Button) findViewById(R.id.btnTest);
+	}
+	
+	@Override
+	protected void onResume()
+	{
+		super.onResume();
+				
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+		int fieldWidth = sharedPref.getInt("FieldWidth", -1);
+		int fieldHeight = sharedPref.getInt("FieldHeight", -1);
+		
+		if (fieldWidth == -1 && fieldHeight == -1)
+		{
+			btnSetBeaconLocations.setEnabled(false);
+			btnStart.setEnabled(false);
+			btnTest.setEnabled(false);
+		}
+		else
+		{
+			btnSetBeaconLocations.setEnabled(true);
+		}
+		
+		String beaconLocationsJSON = sharedPref.getString("BeaconLocations", "[]");
+			
+		Gson gson = new Gson();
+		Type collectionType = new TypeToken<Collection<BeaconLocationItem>>(){}.getType();
+		ArrayList<BeaconLocationItem> beaconLocationsList = (ArrayList<BeaconLocationItem>) gson.fromJson(beaconLocationsJSON, collectionType);
+				
+		// need at least two beacon locations
+		if (beaconLocationsList.size() < 2)
+		{
+			btnStart.setEnabled(false);
+			btnTest.setEnabled(false);
+		}
+		else
+		{
+			btnStart.setEnabled(true);
+			btnTest.setEnabled(true);
+		}
 	}
 
 	@Override

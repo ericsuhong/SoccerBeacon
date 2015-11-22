@@ -70,7 +70,7 @@ public class BeaconLocationsActivity extends ActionBarActivity
 		beaconLocationsList.add(item);
 		beaconLocationsList.add(item);*/
 		
-		beaconLocationsListAdapter = new BeaconLocationsListAdapter(BeaconLocationsActivity.this, beaconLocationsList);
+		beaconLocationsListAdapter = new BeaconLocationsListAdapter(getApplicationContext(), beaconLocationsList);
 		lvBeaconLocations.setAdapter(beaconLocationsListAdapter);
 		
 		btnAddBeacon.setOnClickListener(new OnClickListener(){
@@ -107,6 +107,22 @@ public class BeaconLocationsActivity extends ActionBarActivity
 					return;
 				}
 				
+				SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+				int fieldWidth = sharedPref.getInt("FieldWidth", -1);
+				int fieldHeight = sharedPref.getInt("FieldHeight", -1);
+				
+				if (xPos_int > fieldWidth)
+				{
+					etXpos.setError("X coordinate must be <= " + fieldWidth);
+					return;
+				}
+				
+				if (yPos_int > fieldHeight)
+				{
+					etYpos.setError("Y coordinate must be <= " + fieldHeight);
+					return;
+				}
+				
 				for (int i = 0; i < beaconLocationsList.size(); i++)
 				{
 					if (beaconLocationsList.get(i).getX() == xPos_int && beaconLocationsList.get(i).getY() == yPos_int)
@@ -132,20 +148,7 @@ public class BeaconLocationsActivity extends ActionBarActivity
 			}
 		});
 	}
-	
-	@Override
-	protected void onDestroy()
-	{
-		super.onDestroy();
 		
-		String beaconLocationsJSON = new Gson().toJson(beaconLocationsList);
-		
-		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putString("BeaconLocations", beaconLocationsJSON);
-		editor.commit();
-	}
-	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    if (requestCode == 1) {
@@ -163,10 +166,20 @@ public class BeaconLocationsActivity extends ActionBarActivity
 	        	Collections.sort(beaconLocationsList);
 
 	        	beaconLocationsListAdapter.notifyDataSetChanged();
+	        	
+	    		String beaconLocationsJSON = new Gson().toJson(beaconLocationsList);
+	    		
+	    		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+	    		SharedPreferences.Editor editor = sharedPref.edit();
+	    		editor.putString("BeaconLocations", beaconLocationsJSON);
+	    		editor.commit();
 	        }
 	        
 	        etXpos.setText("");
 	        etYpos.setText("");
+	        
+	        etXpos.setError(null);
+	        etYpos.setError(null);
 	        
 	        etXpos.clearFocus();
 	        etYpos.clearFocus();
