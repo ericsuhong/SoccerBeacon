@@ -12,6 +12,7 @@
 
           <com.shh.soccerbeacon.view.FieldView
 	        android:id="@+id/fvFieldView"
+	        android:layout_marginTop="10dp"
 	        android:layout_width="match_parent"
 	        android:layout_height="500px" />
 
