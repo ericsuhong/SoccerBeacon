@@ -3,24 +3,33 @@ package com.shh.soccerbeacon;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Random;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.shh.soccerbeacon.dto.BeaconLocationItem;
+import com.shh.soccerbeacon.view.FieldView;
 
 import android.support.v7.app.ActionBarActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 
 public class MainActivity extends ActionBarActivity 
 {
@@ -31,6 +40,10 @@ public class MainActivity extends ActionBarActivity
 	private Button btnStart;
 	private Button btnTest;
 	
+	ArrayList<BeaconLocationItem> beaconLocationsList;
+	
+	private FieldView fvFieldView;
+		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -38,6 +51,15 @@ public class MainActivity extends ActionBarActivity
 		mContext = this;
 		setContentView(R.layout.activity_main);
 		
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+		int fieldWidth = sharedPref.getInt("FieldWidth", -1);
+		int fieldHeight = sharedPref.getInt("FieldHeight", -1);
+				
+		fvFieldView = (FieldView) findViewById(R.id.fvFieldView);
+		fvFieldView.setMargin(30);	
+		fvFieldView.setFieldWidth(fieldWidth);
+		fvFieldView.setFieldHeight(fieldHeight);
+				
 		btnSetFieldDimensions = (Button) findViewById(R.id.btnSetFieldDimensions);
 		
 		btnSetFieldDimensions.setOnClickListener(new OnClickListener(){
@@ -58,7 +80,16 @@ public class MainActivity extends ActionBarActivity
 		});
 		
 		btnStart = (Button) findViewById(R.id.btnStart);
+				
 		btnTest = (Button) findViewById(R.id.btnTest);
+		
+		btnTest.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(mContext, TestBeaconsActivity.class);
+				startActivity(intent);
+			}
+		});
 	}
 	
 	@Override
@@ -69,6 +100,9 @@ public class MainActivity extends ActionBarActivity
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 		int fieldWidth = sharedPref.getInt("FieldWidth", -1);
 		int fieldHeight = sharedPref.getInt("FieldHeight", -1);
+				
+		fvFieldView.setFieldWidth(fieldWidth);
+		fvFieldView.setFieldHeight(fieldHeight);
 		
 		if (fieldWidth == -1 && fieldHeight == -1)
 		{
@@ -85,7 +119,7 @@ public class MainActivity extends ActionBarActivity
 			
 		Gson gson = new Gson();
 		Type collectionType = new TypeToken<Collection<BeaconLocationItem>>(){}.getType();
-		ArrayList<BeaconLocationItem> beaconLocationsList = (ArrayList<BeaconLocationItem>) gson.fromJson(beaconLocationsJSON, collectionType);
+		beaconLocationsList = (ArrayList<BeaconLocationItem>) gson.fromJson(beaconLocationsJSON, collectionType);
 				
 		// need at least two beacon locations
 		if (beaconLocationsList.size() < 2)
@@ -98,6 +132,10 @@ public class MainActivity extends ActionBarActivity
 			btnStart.setEnabled(true);
 			btnTest.setEnabled(true);
 		}
+		
+		fvFieldView.setBeaconLocationsList(beaconLocationsList);
+		
+		fvFieldView.invalidate();
 	}
 
 	@Override

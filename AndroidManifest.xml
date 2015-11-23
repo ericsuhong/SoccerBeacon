@@ -41,5 +41,11 @@
             android:label="BeaconLocations"
             android:screenOrientation="portrait" >
         </activity>
+        
+        <activity
+            android:name=".TestBeaconsActivity"
+            android:label="Test Beacons"
+            android:screenOrientation="landscape" >
+        </activity>
     </application>
 </manifest>

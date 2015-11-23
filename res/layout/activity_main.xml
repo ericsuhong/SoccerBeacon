@@ -10,6 +10,11 @@
           android:layout_height="wrap_content"
           android:orientation="vertical" >
 
+          <com.shh.soccerbeacon.view.FieldView
+	        android:id="@+id/fvFieldView"
+	        android:layout_width="match_parent"
+	        android:layout_height="500px" />
+
           <Button
               android:id="@+id/btnSetFieldDimensions"
               android:layout_width="match_parent"

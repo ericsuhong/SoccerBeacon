@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" 
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.shh.soccerbeacon.TestBeaconsActivity">
+    
+    <item
+        android:id="@+id/action_start"
+        android:orderInCategory="100"
+        android:title="START"
+        app:showAsAction="ifRoom"/>
+    
+    <item android:title="View Option"
+        android:orderInCategory="100"
+         app:showAsAction="always">
+        <menu>
+		     <group
+		         android:id="@+id/view_option_group"
+		         android:checkableBehavior="all">
+		         <!-- Notice how these items inherit from the group. -->
+		         <item
+		             android:id="@+id/option_show_circles"
+		             android:checked="true"
+		             android:title="Show Range Circles" />
+		     </group>
+	     </menu>
+     </item>
+</menu>
