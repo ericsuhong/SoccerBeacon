@@ -7,16 +7,20 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 	private String beaconName;
 	private int major;
 	private int minor;
-	private int RSSI;
 	
-	public BeaconLocationItem(int xPos, int yPos, String beaconName, int major, int minor, int RSSI)
+	private int prevRSSI = 0;
+	private long prevDetectedTime = -1; // in milliseconds
+	
+	private int RSSI = 0;
+	private long lastDetectedTime = -1; // in milliseconds
+	
+	public BeaconLocationItem(int xPos, int yPos, String beaconName, int major, int minor)
 	{
 		this.xPos = xPos;
 		this.yPos = yPos;
 		this.beaconName = beaconName;
 		this.major = major;
 		this.minor = minor;
-		this.RSSI = RSSI;
 	}
 
 	public String getBeaconName() {
@@ -35,6 +39,22 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 		this.RSSI = RSSI;
 	}
 	
+	public int getPrevRSSI() {
+		return prevRSSI;
+	}
+	
+	public void setPrevRSSI(int RSSI) {
+		this.prevRSSI = RSSI;
+	}
+		
+	public long getPrevDetectedTime() {
+		return prevDetectedTime;
+	}
+
+	public void setPrevDetectedTime(long prevDetectedTime) {
+		this.prevDetectedTime = prevDetectedTime;
+	}
+
 	public int getMajor() {
 		return major;
 	}
@@ -65,6 +85,14 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 
 	public void setY(int yPos) {
 		this.yPos = yPos;
+	}
+	
+	public long getLastDetectedTime() {
+		return lastDetectedTime;
+	}
+
+	public void setLastDetectedTime(long lastDetectedTime) {
+		this.lastDetectedTime = lastDetectedTime;
 	}
 
 	@Override

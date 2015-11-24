@@ -30,6 +30,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 public class MainActivity extends ActionBarActivity 
 {
@@ -43,6 +44,8 @@ public class MainActivity extends ActionBarActivity
 	ArrayList<BeaconLocationItem> beaconLocationsList;
 	
 	private FieldView fvFieldView;
+	private TextView tvFieldWidth;
+	private TextView tvFieldHeight;
 		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +57,10 @@ public class MainActivity extends ActionBarActivity
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 		int fieldWidth = sharedPref.getInt("FieldWidth", -1);
 		int fieldHeight = sharedPref.getInt("FieldHeight", -1);
-				
+		
+		tvFieldWidth = (TextView) findViewById(R.id.tvFieldWidth);
+		tvFieldHeight = (TextView) findViewById(R.id.tvFieldHeight);
+		
 		fvFieldView = (FieldView) findViewById(R.id.fvFieldView);
 		fvFieldView.setMargin(30);	
 		fvFieldView.setFieldWidth(fieldWidth);
@@ -109,9 +115,13 @@ public class MainActivity extends ActionBarActivity
 			btnSetBeaconLocations.setEnabled(false);
 			btnStart.setEnabled(false);
 			btnTest.setEnabled(false);
+			
+			tvFieldWidth.setText("Field Dimensions are not set");			
 		}
 		else
 		{
+			tvFieldWidth.setText(fieldWidth + "m x ");
+			tvFieldHeight.setText(fieldHeight + "m");
 			btnSetBeaconLocations.setEnabled(true);
 		}
 		

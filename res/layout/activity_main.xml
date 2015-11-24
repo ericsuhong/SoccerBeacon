@@ -16,6 +16,24 @@
 	        android:layout_width="match_parent"
 	        android:layout_height="500px" />
 
+          <LinearLayout
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center_horizontal" >
+
+              <TextView
+                  android:id="@+id/tvFieldWidth"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="Field Dimensions not set" />
+
+              <TextView
+                  android:id="@+id/tvFieldHeight"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"/>
+
+          </LinearLayout>
+
           <Button
               android:id="@+id/btnSetFieldDimensions"
               android:layout_width="match_parent"

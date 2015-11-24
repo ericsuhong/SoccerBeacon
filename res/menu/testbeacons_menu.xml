@@ -12,7 +12,7 @@
     
     <item android:title="View Option"
         android:orderInCategory="100"
-         app:showAsAction="always">
+        app:showAsAction="always">
         <menu>
 		     <group
 		         android:id="@+id/view_option_group"

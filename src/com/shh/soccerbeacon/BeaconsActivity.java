@@ -119,10 +119,10 @@ public class BeaconsActivity extends ActionBarActivity implements BeaconConsumer
 		
 		// scan for new updates every 500 milliseconds
 		// default is 1100 milliseconds...
-		beaconManager.setForegroundScanPeriod(2000);
+		beaconManager.setForegroundScanPeriod(500);
 		beaconManager.setForegroundBetweenScanPeriod(0);
 		
-		beaconManager.setBackgroundScanPeriod(2000);
+		beaconManager.setBackgroundScanPeriod(500);
 		beaconManager.setBackgroundBetweenScanPeriod(0);
 		
 		beaconManager.bind(this);		
