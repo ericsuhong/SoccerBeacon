@@ -32,6 +32,11 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
+            android:name=".SettingsActivity"
+            android:label="Settings"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
             android:name=".FieldDimensionsActivity"
             android:label="FieldDimensions"
             android:screenOrientation="portrait" >
@@ -40,8 +45,7 @@
             android:name=".BeaconLocationsActivity"
             android:label="BeaconLocations"
             android:screenOrientation="portrait" >
-        </activity>
-        
+        </activity>        
         <activity
             android:name=".TestBeaconsActivity"
             android:label="Test Beacons"
