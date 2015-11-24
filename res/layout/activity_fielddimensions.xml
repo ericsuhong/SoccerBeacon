@@ -19,7 +19,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Field Width: " />
+            android:text="Field Width (meters): " />
 
         <EditText
             android:id="@+id/etFieldWidth"
@@ -41,7 +41,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Field Height: " />
+            android:text="Field Height (meters): " />
 
         <EditText
             android:id="@+id/etFieldHeight"
