@@ -1,6 +1,7 @@
 package com.shh.soccerbeacon.view;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 import com.shh.soccerbeacon.R;
@@ -79,9 +80,13 @@ public class FieldView extends View
 			Log.i("canvas", "widthRatio: " + widthRatio + ", heightRatio: " + heightRatio);
 			Log.i("canvas", "adjustedFieldWidth: " + adjustedFieldWidth + ", adjustedFieldHeight: " + adjustedFieldHeight);
 	       
+			
+		   // sort by distance
+		   Collections.sort(beaconLocationsList);
 	       
 	       if (beaconLocationsList != null)
 	       {
+	    	   Log.i("BEACON", "-------------------------");
 	    	   for (int i = 0 ; i < beaconLocationsList.size(); i++)
 	    	   {
 	    		   Paint beaconPaint = new Paint();
@@ -93,17 +98,18 @@ public class FieldView extends View
 	    		   
 	    		   canvas.drawCircle(((bitmapWidth-2*margin)-adjustedFieldWidth)/2 + x + margin, ((bitmapHeight-2*margin)-adjustedFieldHeight)/2+ y + margin, beaconRadius, beaconPaint);
 	    	 
-	    		   if (beacon.getRSSI() != 0)
+	    		   float distance = beacon.getDistance();
+	    		   Log.i("BEACON", "distance: " + distance);
+	    		   
+	    		   if (distance != -1)
 	    		   {
-		    		   long currentTime = System.currentTimeMillis();
-		    		   
 	    			   Paint beaconRangePaint = new Paint();
 	    			   beaconRangePaint.setColor(Color.parseColor(beaconRangeColor));
 	    			   beaconRangePaint.setStyle(Paint.Style.STROKE);
 	    			   beaconRangePaint.setStrokeWidth(4f);
 	    			  
-	    			   canvas.drawCircle(((bitmapWidth-2*margin)-adjustedFieldWidth)/2 + x + margin, ((bitmapHeight-2*margin)-adjustedFieldHeight)/2+ y + margin, calculateDistance(beacon.getPrevRSSI(), beacon.getPrevDetectedTime(), beacon.getRSSI(), beacon.getLastDetectedTime(), currentTime), beaconRangePaint);	   
-		    		 }
+	    			   canvas.drawCircle(((bitmapWidth-2*margin)-adjustedFieldWidth)/2 + x + margin, ((bitmapHeight-2*margin)-adjustedFieldHeight)/2+ y + margin, distance, beaconRangePaint);
+	    		   }
 	    	   }	       
 	       }
 		}
@@ -148,33 +154,5 @@ public class FieldView extends View
 
 	public void setBeaconRadius(float beaconRadius) {
 		this.beaconRadius = beaconRadius;
-	}
-	
-	public float calculateDistance(int prevRSSI, long prevDetectedTime, int RSSI, long lastDetectedTime, long currentTime)
-	{
-		   if (prevRSSI != 0 && prevDetectedTime != -1 && (currentTime - prevDetectedTime < 1500))
-		   {
-			   if (RSSI != 0 && lastDetectedTime != -1 && (currentTime - lastDetectedTime < 1500))
-			   {
-				   return ((float) (prevRSSI + RSSI) / 2 * -3); // running sum average
-			   }
-			   else
-			   {
-				   // this case should never happen
-				   Log.e("ERROR", "PREVRSSI IS MORE RECENT AND VALID THAN CURRENT RSSI! THIS CASE SHOULD NEVER HAPPEN!!!!!");
-				   return (float) prevRSSI * -3;
-			   }
-		   }
-		   else
-		   {
-			   if (RSSI != 0 && lastDetectedTime != -1 && (currentTime - lastDetectedTime < 1500))
-			   {
-				   return ((float) RSSI * -3);
-			   }
-			   else
-			   {
-				   return 0;
-			   }			   
-		   }
 	}
 }

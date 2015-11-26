@@ -25,6 +25,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -76,6 +78,20 @@ public class TestBeaconsActivity extends ActionBarActivity implements BeaconCons
 		beaconManager.setBackgroundBetweenScanPeriod(0);
 		
 		beaconManager.bind(this);	
+	}
+	
+	@Override
+	public void onStart()
+	{
+		super.onStart();
+		
+		BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+		
+		if(!mBluetoothAdapter.isEnabled())
+        {
+          Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+          startActivityForResult(enableBtIntent, 1);
+        }
 	}
 	
 	@Override
@@ -138,11 +154,16 @@ public class TestBeaconsActivity extends ActionBarActivity implements BeaconCons
                 			if (beaconLocation.getMajor() == major && beaconLocation.getMinor() == minor)
                 			{         				
                 				beaconLocation.setPrevRSSI(beaconLocation.getRSSI());
-                				beaconLocation.setPrevDetectedTime(beaconLocation.getLastDetectedTime());
+                				beaconLocation.setPrevDetectedTime(beaconLocation.getLastDetectedTime());                				
+                			
+                				//Log.i("BEACON", "RSSI: " + major + ", " + minor + ": " + RSSI);
                 				
+                				beaconLocation.setRSSI(RSSI);
+                				                				
                 				long timestamp = System.currentTimeMillis();
-                				beaconLocation.setRSSI(RSSI);                				
-                				beaconLocation.setLastDetectedTime(timestamp);
+                				beaconLocation.setLastDetectedTime(timestamp);     
+                				
+                				beaconLocation.setDistance(beaconLocation.calculateDistance());
                 			}
                 		}       		
                 	}       
