@@ -94,6 +94,13 @@ public class TestBeaconsActivity extends ActionBarActivity implements BeaconCons
         }
 	}
 	
+	public void onDestroy()
+	{
+		super.onDestroy();
+		
+		beaconManager.unbind(this);
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -156,17 +163,24 @@ public class TestBeaconsActivity extends ActionBarActivity implements BeaconCons
                 				beaconLocation.setPrevRSSI(beaconLocation.getRSSI());
                 				beaconLocation.setPrevDetectedTime(beaconLocation.getLastDetectedTime());                				
                 			
-                				//Log.i("BEACON", "RSSI: " + major + ", " + minor + ": " + RSSI);
+                				Log.i("BEACON", "RSSI: " + major + ", " + minor + ": " + RSSI);
                 				
                 				beaconLocation.setRSSI(RSSI);
                 				                				
                 				long timestamp = System.currentTimeMillis();
-                				beaconLocation.setLastDetectedTime(timestamp);     
+                				beaconLocation.setLastDetectedTime(timestamp);
                 				
-                				beaconLocation.setDistance(beaconLocation.calculateDistance());
-                			}
+                				break;
+                			}                			
                 		}       		
-                	}       
+                	} 
+                	
+                	// search through beacon locations to see if this beacon is registered in the field
+            		for (int i = 0; i < beaconLocationsList.size(); i++)
+            		{
+            			BeaconLocationItem beaconLocation = beaconLocationsList.get(i);
+            			beaconLocation.setDistance(beaconLocation.calculateDistance());            			
+            		}     
                 }
             	
             	runOnUiThread(new Runnable() {

@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.logging.Logger;
 
 import org.json.JSONArray;
 
@@ -14,14 +15,20 @@ import com.shh.soccerbeacon.dto.BeaconLocationItem;
 import com.shh.soccerbeacon.dto.FieldData;
 
 import android.support.v7.app.ActionBarActivity;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -72,7 +79,7 @@ public class BeaconLocationsActivity extends ActionBarActivity
 		
 		beaconLocationsListAdapter = new BeaconLocationsListAdapter(getApplicationContext(), beaconLocationsList);
 		lvBeaconLocations.setAdapter(beaconLocationsListAdapter);
-		
+				
 		btnAddBeacon.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) 
