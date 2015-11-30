@@ -90,23 +90,6 @@ public class BeaconsActivity extends ActionBarActivity implements BeaconConsumer
 					setResult(Activity.RESULT_OK, returnIntent);
 					finish();
 				}
-				else
-				{
-					TextView tvBeaconName = (TextView) v.findViewById(R.id.tvBeaconName);
-					TextView tvBeaconMajor = (TextView) v.findViewById(R.id.tvBeaconMajor);
-					TextView tvBeaconMinor = (TextView) v.findViewById(R.id.tvBeaconMinor);
-					
-					String name = tvBeaconName.getText().toString();
-					int major = Integer.parseInt(tvBeaconMajor.getText().toString());
-					int minor = Integer.parseInt(tvBeaconMinor.getText().toString());
-					
-					Intent intent = new Intent(mContext, CalibrationActivity.class);	
-					intent.putExtra("beaconName", name);
-					intent.putExtra("beaconMajor", major);
-					intent.putExtra("beaconMinor", minor);
-					
-					startActivity(intent);
-				}
 			}});
 		
 		beaconList = new ArrayList<BeaconListItem>();

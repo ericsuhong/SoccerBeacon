@@ -25,6 +25,11 @@
             android:name=".BeaconsActivity"
             android:label="Beacons"
             android:screenOrientation="portrait" >
+        </activity>        
+        <activity
+            android:name=".CalibrateListActivity"
+            android:label="Calibrate List"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".CalibrationActivity"

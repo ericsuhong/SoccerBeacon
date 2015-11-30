@@ -66,17 +66,6 @@ public class BeaconLocationsActivity extends ActionBarActivity
 		Type collectionType = new TypeToken<Collection<BeaconLocationItem>>(){}.getType();
 		beaconLocationsList = (ArrayList<BeaconLocationItem>) gson.fromJson(beaconLocationsJSON, collectionType);
 		
-		/*
-		BeaconLocationItem item = new BeaconLocationItem(10,20, "HELLO", 3901, 19349, -30);
-		beaconLocationsList.add(item);
-		beaconLocationsList.add(item);
-		beaconLocationsList.add(item);
-		beaconLocationsList.add(item);
-		beaconLocationsList.add(item);
-		beaconLocationsList.add(item);
-		beaconLocationsList.add(item);
-		beaconLocationsList.add(item);*/
-		
 		beaconLocationsListAdapter = new BeaconLocationsListAdapter(getApplicationContext(), beaconLocationsList);
 		lvBeaconLocations.setAdapter(beaconLocationsListAdapter);
 				

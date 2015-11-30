@@ -50,7 +50,7 @@ public class TestBeaconsActivity extends ActionBarActivity implements BeaconCons
 		int fieldHeight = sharedPref.getInt("FieldHeight", -1);
 				
 		fvFieldView = (FieldView) findViewById(R.id.fvFieldView);
-		fvFieldView.setMargin(30);	
+		fvFieldView.setMargin(150);	
 		fvFieldView.setFieldWidth(fieldWidth);
 		fvFieldView.setFieldHeight(fieldHeight);
 		
@@ -160,15 +160,11 @@ public class TestBeaconsActivity extends ActionBarActivity implements BeaconCons
                 			BeaconLocationItem beaconLocation = beaconLocationsList.get(i);
                 			if (beaconLocation.getMajor() == major && beaconLocation.getMinor() == minor)
                 			{         				
-                				beaconLocation.setPrevRSSI(beaconLocation.getRSSI());
-                				beaconLocation.setPrevDetectedTime(beaconLocation.getLastDetectedTime());                				
+                				beaconLocation.setRSSI(beaconLocation.getRSSI());
                 			
                 				Log.i("BEACON", "RSSI: " + major + ", " + minor + ": " + RSSI);
                 				
                 				beaconLocation.setRSSI(RSSI);
-                				                				
-                				long timestamp = System.currentTimeMillis();
-                				beaconLocation.setLastDetectedTime(timestamp);
                 				
                 				break;
                 			}                			

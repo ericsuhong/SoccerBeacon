@@ -49,9 +49,7 @@ public class FieldView extends View
 	Paint beaconRangePaint;
 	Paint currentPosPaint;
 	Paint debugPosPaint;
-	
-	int RSSI_limit = -85;
-	
+		
     public FieldView(Context context, AttributeSet attrs) 
     {
         super(context, attrs);
@@ -76,7 +74,7 @@ public class FieldView extends View
 		
 		debugPosPaint = new Paint();
 		debugPosPaint.setColor(Color.parseColor(debugPosColor));
-    }   
+    }
     
     @Override
 	protected void onDraw(Canvas canvas) {
@@ -114,7 +112,7 @@ public class FieldView extends View
 	       {
 	    	   //Log.i("BEACON", "-------------------------");
 	    	   
-	    	   // first loop to draw range circles
+	    	   // first loop to draw beacons
 	    	   for (int i = 0 ; i < beaconLocationsList.size(); i++)
 	    	   {	    		   
 	    		   BeaconLocationItem beacon = beaconLocationsList.get(i);
@@ -125,22 +123,13 @@ public class FieldView extends View
 		    		   canvas.drawText(beacon.getBeaconName(), calculateAdjustedX(beacon.getX()), calculateAdjustedY(beacon.getY()) + beaconRadius, textPaint); 
 	    		   }
 	    		   
-	    		   if (showRange)
-	    		   {		    		   
-		    		   float distance = beacon.getDistance();
-		    		   //Log.i("BEACON", "distance: " + distance);
-		    		   
-		    		   if (distance != -1)
-		    		   {
-		    			   if (beacon.getRSSI() >= RSSI_limit)
-		    				   canvas.drawCircle(calculateAdjustedX(beacon.getX()), calculateAdjustedY(beacon.getY()), calculateAdjustedDistance(distance), beaconRangePaint);
-		    		   }	    		   
-	    		   }
-	    		   
 	    		   if (showDebug)
 	    		   {
-	    			   if (beacon.getRSSI() != 0)
-	    				   canvas.drawText("" + beacon.getRSSI() + ", " + String.format("%.3f", beacon.getDistance()) + "m", calculateAdjustedX(beacon.getX()), calculateAdjustedY(beacon.getY()) + beaconRadius + beaconRadius+beaconRadius, textPaint); 
+	    			   if (beacon.getAverageRSSI() != 0)
+	    			   {
+	    				   canvas.drawText("" + beacon.getRSSI(), calculateAdjustedX(beacon.getX()), calculateAdjustedY(beacon.getY()) + beaconRadius + beaconRadius+beaconRadius, textPaint);
+	    				   canvas.drawText("" + beacon.getAverageRSSI() + ", " + String.format("%.3f", beacon.getDistance()) + "m", calculateAdjustedX(beacon.getX()), calculateAdjustedY(beacon.getY()) + beaconRadius + beaconRadius+beaconRadius+beaconRadius, textPaint); 
+	    			   }
 	    		   }	    			   
 	    	   }
 	    	   	    	   
@@ -156,7 +145,19 @@ public class FieldView extends View
 	    		   BeaconLocationItem firstBeacon = beaconLocationsList.get(i);
 	    		   
 	    		   if (firstBeacon.getDistance() == -1)
+	    		   {
 	    			   continue;
+	    		   }
+	    		   else
+	    		   {		    		   
+		    		   if (showRange)
+		    		   {		    		   
+			    		   float distance = firstBeacon.getDistance();
+			    		   //Log.i("BEACON", "distance: " + distance);
+			    		   
+		    			   canvas.drawCircle(calculateAdjustedX(firstBeacon.getX()), calculateAdjustedY(firstBeacon.getY()), calculateAdjustedDistance(distance), beaconRangePaint);    		   
+		    		   }
+	    		   }	    			   
 	    		   
 	    		   // case #1: only 1 circle's distance is available
 	    		   // cannot infer any position from it...
@@ -172,6 +173,14 @@ public class FieldView extends View
 	    			   i++;
 	    			   
 	    			   BeaconLocationItem secondBeacon = beaconLocationsList.get(i);
+	    			   
+	    			   if (showRange)
+		    		   {		    		   
+			    		   float distance = secondBeacon.getDistance();
+			    		   //Log.i("BEACON", "distance: " + distance);
+			    		   
+		    			   canvas.drawCircle(calculateAdjustedX(secondBeacon.getX()), calculateAdjustedY(secondBeacon.getY()), calculateAdjustedDistance(distance), beaconRangePaint);    		   
+		    		   }
 	    			   
 	    			   //Log.i("BEACON", "Two circles available: " + firstBeacon.getBeaconName() + ", " + firstBeacon.getDistance() + ", " + secondBeacon.getBeaconName() + ", " + secondBeacon.getDistance());
 	    			   	    	
@@ -662,19 +671,24 @@ public class FieldView extends View
 	    		   return;
 		       }
 
-	    	   // Once "first position" is determined, iterate through other beacons to adjust the position
-	    	   for (; i < beaconLocationsList.size(); i++)
+	    	   // if third beacon is available...	    	   
+	    	   if (i+1 < beaconLocationsList.size())
 	    	   {
-	    		   BeaconLocationItem beacon = beaconLocationsList.get(i);
+	    		   BeaconLocationItem thirdBeacon = beaconLocationsList.get(i+1);
+	    		   
+	    		   if (showRange)
+	    		   {		    		   
+		    		   float distance = thirdBeacon.getDistance();
+		    		   //Log.i("BEACON", "distance: " + distance);
+		    		   
+	    			   canvas.drawCircle(calculateAdjustedX(thirdBeacon.getX()), calculateAdjustedY(thirdBeacon.getY()), calculateAdjustedDistance(distance), beaconRangePaint);    		   
+	    		   }
 	    		   
 	    		   float x1 = pointX;
 	    		   float y1 = pointY;
-	    		   float x2 = beacon.getX();
-	    		   float y2 = beacon.getY();
-	    		   float r = beacon.getDistance();
-	    		   
-	    		   if (beacon.getRSSI() < RSSI_limit)
-	    			   continue;
+	    		   float x2 = thirdBeacon.getX();
+	    		   float y2 = thirdBeacon.getY();
+	    		   float r = thirdBeacon.getDistance();
 	    		   
 	    		   // line that goes throught two center points: y = mx + c
 				   double m = (y2-y1)/(x2-x1);  
@@ -725,8 +739,7 @@ public class FieldView extends View
 	    	   {	    		   
 		    	   // first point is now available...
 		    	   canvas.drawCircle(calculateAdjustedX(pointX), calculateAdjustedY(pointY), currentPosRadius, currentPosPaint);
-	    	   }
-	    	   
+	    	   }	    	   
 	    	   
 	    	   // first point is now available...
 	    	   //canvas.drawCircle(calculateAdjustedX(pointX), calculateAdjustedY(pointY), currentPosRadius, currentPosPaint);   

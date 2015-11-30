@@ -37,6 +37,7 @@ public class MainActivity extends ActionBarActivity
 	private Context mContext;
 	private Button btnSetBeaconLocations;
 	private Button btnSetFieldDimensions;
+	private Button btnCalibrateBeacons;
 
 	private Button btnStart;
 	private Button btnTest;
@@ -81,6 +82,15 @@ public class MainActivity extends ActionBarActivity
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(mContext, BeaconLocationsActivity.class);
+				startActivity(intent);
+			}
+		});
+		
+		btnCalibrateBeacons = (Button) findViewById(R.id.btnCalibrateBeacons);
+		btnCalibrateBeacons.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(mContext, CalibrateListActivity.class);
 				startActivity(intent);
 			}
 		});
@@ -134,13 +144,26 @@ public class MainActivity extends ActionBarActivity
 		// need at least two beacon locations
 		if (beaconLocationsList.size() < 2)
 		{
+			btnCalibrateBeacons.setEnabled(false);
 			btnStart.setEnabled(false);
 			btnTest.setEnabled(false);
 		}
 		else
 		{
+			btnCalibrateBeacons.setEnabled(true);
 			btnStart.setEnabled(true);
 			btnTest.setEnabled(true);
+			
+			for (int i = 0; i < beaconLocationsList.size(); i++)
+			{
+				BeaconLocationItem beacon = beaconLocationsList.get(i);
+				if (!beacon.isCalibrated())
+				{
+					btnStart.setEnabled(false);
+					btnTest.setEnabled(false);
+					break;
+				}				
+			}
 		}
 		
 		fvFieldView.setBeaconLocationsList(beaconLocationsList);
