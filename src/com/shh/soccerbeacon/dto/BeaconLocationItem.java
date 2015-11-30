@@ -106,6 +106,34 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 	public void setDistance(float distance) {
 		this.distance = distance;
 	}
+	
+	public float distanceFunction(float RSSI)
+	{		
+		/*
+		double A = 0.0177;
+		double B = -3.065;
+		double C = -56.23-RSSI;
+		
+		float distance = (float) ((-B-Math.sqrt(B*B-4*A*C))/(2*A));
+				
+		Log.i("BEACON", "DISTANCE_NEG: " + distance);
+		
+		if (distance < 0)
+		{
+			return 0.5f;
+		}*/
+		
+		float distance = (float) Math.exp((-RSSI - 59.32)/12.7);
+		
+		if (distance < 0)
+		{
+			return 0.5f;
+		}
+		
+		Log.i("BEACON", "DISTANCE: " + distance);
+		
+		return distance;
+	}
 
 	public float calculateDistance()
 	{
@@ -115,20 +143,20 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 	   {
 		   if (RSSI != 0 && lastDetectedTime != -1 && (currentTime - lastDetectedTime < 1500))
 		   {
-			   return ((float) (prevRSSI + RSSI) / 2 * -3); // running sum average
+			   return (distanceFunction((prevRSSI + RSSI) / 2)); // running sum average
 		   }
 		   else
 		   {
 			   // this case should never happen
 			   Log.e("ERROR", "PREVRSSI IS MORE RECENT AND VALID THAN CURRENT RSSI! THIS CASE SHOULD NEVER HAPPEN!!!!!");
-			   return (float) prevRSSI * -3;
+			   return (distanceFunction(prevRSSI));
 		   }
 	   }
 	   else
 	   {
 		   if (RSSI != 0 && lastDetectedTime != -1 && (currentTime - lastDetectedTime < 1500))
 		   {
-			   return ((float) RSSI * -3);
+			   return distanceFunction(RSSI);
 		   }
 		   else
 		   {

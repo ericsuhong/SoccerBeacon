@@ -171,10 +171,7 @@ public class MainActivity extends ActionBarActivity
 		}
 		else if (id == R.id.action_calibration) 
 		{
-			Intent intent = new Intent(this, CalibrationActivity.class);
-			startActivity(intent);
-			    
-			return true;
+
 		}
 		else if (id == R.id.action_settings) 
 		{

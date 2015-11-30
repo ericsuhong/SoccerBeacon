@@ -1,6 +1,229 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
     
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Beacon Name: " />
+
+        <TextView
+            android:id="@+id/tvBeaconName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="StoH" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/tvMajorMinor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="12314,1234" />
+
+    </LinearLayout>
+    
+    <TextView
+        android:id="@+id/tvCurrentRSSI"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/btn1m"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1m (39.37in)" />
+
+        <TextView
+            android:id="@+id/tv1mAvg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/btn2m"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2m (78.74in)" />
+
+        <TextView
+            android:id="@+id/tv2mAvg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/btn3m"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3m (118.11in)" />
+
+        <TextView
+            android:id="@+id/tv3mAvg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/btn4m"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4m (157.48in)" />
+
+        <TextView
+            android:id="@+id/tv4mAvg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/btn5m"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5m (196.85in)" />
+
+        <TextView
+            android:id="@+id/tv5mAvg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/btn6m"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="6m (236.22in)" />
+
+        <TextView
+            android:id="@+id/tv6mAvg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/btn7m"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="7m (275.591in)" />
+
+        <TextView
+            android:id="@+id/tv7mAvg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/btn8m"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="8m (314.961in)" />
+
+        <TextView
+            android:id="@+id/tv8mAvg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/btn9m"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="9m (354.331in)" />
+
+        <TextView
+            android:id="@+id/tv9mAvg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/btn10m"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="10m (393.701in)" />
+
+        <TextView
+            android:id="@+id/tv10mAvg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+    </LinearLayout>    
 </LinearLayout>

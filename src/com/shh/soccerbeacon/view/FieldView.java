@@ -2,7 +2,6 @@ package com.shh.soccerbeacon.view;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Random;
 
 import com.shh.soccerbeacon.R;
 import com.shh.soccerbeacon.dto.BeaconLocationItem;
@@ -24,14 +23,21 @@ public class FieldView extends View
 	private int fieldHeight = -1;
 	
 	String fieldColor = "#35AE2F";
-	String beaconColor = "#FF0000";
+	String beaconColor = "#EEEEEE";
 	String beaconRangeColor = "#000000";
+	String debugPosColor = "#FF00FF";
 	String currentPosColor = "#FFFF00";
 	
-	float beaconRadius = 15;
+	float beaconRadius = 12;
+	float currentPosRadius = 12;
+	float debugPosRadius = 5;
 	
 	int bitmapWidth = 0;
 	int bitmapHeight = 0;
+	
+	boolean showBeacons = true;
+	boolean showRange = true;
+	boolean showDebug = true;
 	
 	ArrayList<BeaconLocationItem> beaconLocationsList;
 	
@@ -42,6 +48,9 @@ public class FieldView extends View
 	Paint textPaint;
 	Paint beaconRangePaint;
 	Paint currentPosPaint;
+	Paint debugPosPaint;
+	
+	int RSSI_limit = -85;
 	
     public FieldView(Context context, AttributeSet attrs) 
     {
@@ -55,15 +64,18 @@ public class FieldView extends View
 		
 		textPaint = new Paint();
 		textPaint.setColor(Color.BLACK); 
-		textPaint.setTextSize(20); 
+		textPaint.setTextSize(22); 
 		
 		beaconRangePaint = new Paint();
 		beaconRangePaint.setColor(Color.parseColor(beaconRangeColor));
 		beaconRangePaint.setStyle(Paint.Style.STROKE);
 		beaconRangePaint.setStrokeWidth(4f);
-		
+				
 		currentPosPaint = new Paint();
 		currentPosPaint.setColor(Color.parseColor(currentPosColor));
+		
+		debugPosPaint = new Paint();
+		debugPosPaint.setColor(Color.parseColor(debugPosColor));
     }   
     
     @Override
@@ -106,24 +118,40 @@ public class FieldView extends View
 	    	   for (int i = 0 ; i < beaconLocationsList.size(); i++)
 	    	   {	    		   
 	    		   BeaconLocationItem beacon = beaconLocationsList.get(i);
-	    		   canvas.drawCircle(calculateAdjustedX(beacon.getX()), calculateAdjustedY(beacon.getY()), beaconRadius, beaconPaint);  		   
-	    		   canvas.drawText(beacon.getBeaconName(), calculateAdjustedX(beacon.getX()), calculateAdjustedY(beacon.getY()) + beaconRadius, textPaint); 
 	    		   
-	    		   float distance = beacon.getDistance();
-	    		   //Log.i("BEACON", "distance: " + distance);
-	    		   
-	    		   if (distance != -1)
-	    		   {	    			  
-	    			   canvas.drawCircle(calculateAdjustedX(beacon.getX()), calculateAdjustedY(beacon.getY()), calculateAdjustedDistance(distance), beaconRangePaint);
+	    		   if (showBeacons)
+	    		   {
+		    		   canvas.drawCircle(calculateAdjustedX(beacon.getX()), calculateAdjustedY(beacon.getY()), beaconRadius, beaconPaint);  		   
+		    		   canvas.drawText(beacon.getBeaconName(), calculateAdjustedX(beacon.getX()), calculateAdjustedY(beacon.getY()) + beaconRadius, textPaint); 
 	    		   }
+	    		   
+	    		   if (showRange)
+	    		   {		    		   
+		    		   float distance = beacon.getDistance();
+		    		   //Log.i("BEACON", "distance: " + distance);
+		    		   
+		    		   if (distance != -1)
+		    		   {
+		    			   if (beacon.getRSSI() >= RSSI_limit)
+		    				   canvas.drawCircle(calculateAdjustedX(beacon.getX()), calculateAdjustedY(beacon.getY()), calculateAdjustedDistance(distance), beaconRangePaint);
+		    		   }	    		   
+	    		   }
+	    		   
+	    		   if (showDebug)
+	    		   {
+	    			   if (beacon.getRSSI() != 0)
+	    				   canvas.drawText("" + beacon.getRSSI() + ", " + String.format("%.3f", beacon.getDistance()) + "m", calculateAdjustedX(beacon.getX()), calculateAdjustedY(beacon.getY()) + beaconRadius + beaconRadius+beaconRadius, textPaint); 
+	    		   }	    			   
 	    	   }
-	    	   
+	    	   	    	   
 	    	   // current "closest" position discovered so far...
 	    	   float pointX = -1;
 	    	   float pointY = -1;
 	    	   
+	    	   int i;
+	    	   
 	    	   // second loop to calculate positions
-	    	   for (int i = 0 ; i < beaconLocationsList.size(); i++)
+	    	   for (i = 0 ; i < beaconLocationsList.size(); i++)
 	    	   {		   
 	    		   BeaconLocationItem firstBeacon = beaconLocationsList.get(i);
 	    		   
@@ -135,14 +163,17 @@ public class FieldView extends View
 	    		   if (i == (beaconLocationsList.size() - 1))
 	    		   {
 	    			   Log.i("BEACON", "Only one circle available: " + firstBeacon.getBeaconName() + ", " + firstBeacon.getDistance());
+
 	    			   break;
 	    		   }
 	    		   // case #2: first two small circles are available
 	    		   else
 	    		   {
-	    			   BeaconLocationItem secondBeacon = beaconLocationsList.get(i+1);
+	    			   i++;
 	    			   
-	    			   Log.i("BEACON", "Two circles available: " + firstBeacon.getBeaconName() + ", " + firstBeacon.getDistance() + ", " + secondBeacon.getBeaconName() + ", " + secondBeacon.getDistance());
+	    			   BeaconLocationItem secondBeacon = beaconLocationsList.get(i);
+	    			   
+	    			   //Log.i("BEACON", "Two circles available: " + firstBeacon.getBeaconName() + ", " + firstBeacon.getDistance() + ", " + secondBeacon.getBeaconName() + ", " + secondBeacon.getDistance());
 	    			   	    	
 	    			   double x1 = firstBeacon.getX();
 	    			   double y1 = firstBeacon.getY();
@@ -159,26 +190,51 @@ public class FieldView extends View
 	    			   
 	    			   // case #2a: two circles intersect
 	    			   if (Math.abs(r2-r1) <= centerDistance && centerDistance <= (r2+r1))
-	    			   {	 	    				   
-	    				   double Zy = (r1*r1-r2*r2)-(x1*x1-x2*x2)-(y1*y1-y2*y2)+2*x1*(x1-x2);
-	    				   double Ay = (((y1-y2)*(y1-y2))/((x1-x2)*(x1-x2))) + 1;
-	    				   double By = ((Zy *(y1-y2))/((x1-x2)*(x1-x2))) - 2*y1;
-	    				   double Cy = ((Zy*Zy)/(4*(x1-x2)*(x1-x2))) + y1*y1 - r1*r1;
+	    			   {
+	    				   float py1_neg, py1_pos, px1_neg, px1_pos;
 	    				   
-	    				   float py1_neg = (float) ((-By-Math.sqrt(By*By-4*Ay*Cy))/(2*Ay));
-	    				   float py1_pos = (float) ((-By+Math.sqrt(By*By-4*Ay*Cy))/(2*Ay));    
+	    				   if (x1 == x2)
+	    				   {
+	    					  py1_pos = py1_neg = (float) (((r1*r1-r2*r2)-(y1*y1-y2*y2))/ ((-2)*(y1-y2)));
+	    					  
+	    					  double A = 1;
+	    					  double B = -2 * x1;
+	    					  double C = x1*x1-r1*r1+(py1_pos-y1)*(py1_pos-y1);
+	    					  
+	    					  px1_pos = (float) ((-B+Math.sqrt(B*B-4*A*C))/(2*A));
+	    					  px1_neg = (float) ((-B-Math.sqrt(B*B-4*A*C))/(2*A));
+	    				   }
+	    				   else
+	    				   {	    				   
+		    				   double Zy = (r1*r1-r2*r2)-(x1*x1-x2*x2)-(y1*y1-y2*y2)+2*x1*(x1-x2);
+		    				   double Ay = (((y1-y2)*(y1-y2))/((x1-x2)*(x1-x2))) + 1;
+		    				   double By = ((Zy *(y1-y2))/((x1-x2)*(x1-x2))) - 2*y1;
+		    				   double Cy = ((Zy*Zy)/(4*(x1-x2)*(x1-x2))) + y1*y1 - r1*r1;
+		    				   
+		    				   py1_neg = (float) ((-By-Math.sqrt(By*By-4*Ay*Cy))/(2*Ay));
+		    				   py1_pos = (float) ((-By+Math.sqrt(By*By-4*Ay*Cy))/(2*Ay));    
+		    				   
+		    				   px1_neg = (float)(((r1*r1-r2*r2)-(x1*x1-x2*x2)-(y1*y1-y2*y2)+2*py1_neg*(y1-y2))/(-2*(x1-x2)));
+		    				   px1_pos = (float)(((r1*r1-r2*r2)-(x1*x1-x2*x2)-(y1*y1-y2*y2)+2*py1_pos*(y1-y2))/(-2*(x1-x2)));
+	    				   }
 	    				   
-	    				   float px1_neg = (float)(((r1*r1-r2*r2)-(x1*x1-x2*x2)-(y1*y1-y2*y2)+2*py1_neg*(y1-y2))/(-2*(x1-x2)));
-	    				   float px1_pos = (float)(((r1*r1-r2*r2)-(x1*x1-x2*x2)-(y1*y1-y2*y2)+2*py1_pos*(y1-y2))/(-2*(x1-x2)));
+	    				   //Log.i("BEACON", "py1_neg, py1_pos: " + py1_neg + ", " + py1_pos);
+    					   //Log.i("BEACON", "px1_neg, px1_pos: " + px1_neg + ", " + px1_pos);
 	    				   
-    					   canvas.drawCircle(calculateAdjustedX(px1_neg), calculateAdjustedY(py1_neg), beaconRadius, currentPosPaint);	    					   
-    					   canvas.drawCircle(calculateAdjustedX(px1_pos), calculateAdjustedY(py1_pos), beaconRadius, currentPosPaint);	
+	    				   if (showDebug)
+    					   {
+	    					   canvas.drawCircle(calculateAdjustedX(px1_neg), calculateAdjustedY(py1_neg), debugPosRadius, debugPosPaint);	    					   
+	    					   canvas.drawCircle(calculateAdjustedX(px1_pos), calculateAdjustedY(py1_pos), debugPosRadius, debugPosPaint);	
+    					   }
 	    				   
-	    				   // case #1: two circles intersect at one point
-	    				   /*
-	    				   if ((r2 + r1) == centerDistance)
+    					   // case #1: two circles intersect at one point
+	    				   if (px1_neg == px1_pos && py1_neg == py1_pos)
 	    				   {
 	    					   Log.i("BEACON", "Two circles intersect at ONE point");
+	    					   
+	    					   pointX = px1_pos;
+	    					   pointY = py1_pos;
+	    					   
 	    					   break;
 	    				   }
 	    				   // case #2: two circles intersect at two points
@@ -186,9 +242,183 @@ public class FieldView extends View
 	    				   {
 	    					   Log.i("BEACON", "Two circles intersect at TWO point");
 	    					   
-	    					   // need to take a look at third point...   
-	    	    			   break;
-	    				   }*/
+	    					   pointX = (px1_pos + px1_neg)/2;
+    						   pointY = (py1_pos + py1_neg)/2;	
+    						   
+    						   break;
+	    					   
+    						   /*
+	    					   if (i == (beaconLocationsList.size() - 1))
+	    					   {
+	    						   Log.i("BEACON", "ONLY two circles are available...");
+
+	    						   // only two circles are available...
+	    						   // take an average pos between two intersection points
+	    						   
+	    						   pointX = (px1_pos + px1_neg)/2;
+	    						   pointY = (py1_pos + py1_neg)/2;	    						   
+	    					   }
+	    					   else
+	    					   {
+	    						   Log.i("BEACON", "Third circle is available...");
+	    						   
+		    					   // need to take a look at third point...
+	    						   i++;
+	    						   
+	    						   BeaconLocationItem thirdBeacon = beaconLocationsList.get(i);
+	    						   
+	    						   // choose an intersection point that is closer to the third circle
+	    						   float pos_distance, neg_distance;
+	    						   float pos_x1, pos_y1, pos_x2, pos_y2;
+	    						   float neg_x1, neg_y1, neg_x2, neg_y2;
+	    						   float pos_x, pos_y, neg_x, neg_y;
+	    						   
+	    						   // draw a line between each intersect point to the center of the third circle
+	    						   // line that goes throught two center points: y = mx + c
+		    					   double m_pos = (py1_pos-thirdBeacon.getY())/(px1_pos-thirdBeacon.getX());  
+		    					   double c_pos = thirdBeacon.getY() - m_pos*thirdBeacon.getX();
+		    					   
+		    					   if ((px1_pos-thirdBeacon.getX()) != 0)
+		    					   {
+		    						   //Log.i("BEACON", "SLOPE IS NOT INFINITE!!!");
+		    						   
+			    					   // two intersection points between a pos line and a third circle
+			    					   double p = thirdBeacon.getX();
+			    					   double q = thirdBeacon.getY();
+			    					   double r = thirdBeacon.getDistance();
+			    					
+			    					   // coefficients for quadratic formula equation
+			    					   double A1 = m_pos*m_pos+1;
+			    					   double B1 = 2*(m_pos*c_pos-m_pos*q-p);
+			    					   double C1 = q*q-r*r+p*p-2*c_pos*q+c_pos*c_pos;
+			    					   
+			    					   pos_x1 = (float) ((-B1-Math.sqrt(B1*B1-4*A1*C1))/(2*A1));
+			    					   pos_y1 = (float) (m_pos * pos_x1 + c_pos);
+	
+			    					   pos_x2 = (float) ((-B1+Math.sqrt(B1*B1-4*A1*C1))/(2*A1));	    					   
+			    					   pos_y2 = (float) (m_pos * pos_x2 + c_pos);
+			    					   
+			    					   //Log.i("BEACON", "pos_x1, pos_y1: " + pos_x1 + ", " + pos_y1);
+			    					   //Log.i("BEACON", "pos_x2, pos_y2: " + pos_x2 + ", " + pos_y2);
+		    					   }
+		    					   else
+		    					   {
+		    						   //Log.i("BEACON", "SLOPE IS INFINITE!!!");
+		    						   
+		    						   double x3 = thirdBeacon.getX();
+		    						   double y3 = thirdBeacon.getY();
+		    						   double r3 = thirdBeacon.getDistance();
+		    						   
+		    						   double A1 = 1;
+			    					   double B1 = -2 * y3;
+			    					   double C1 = y3*y3 - r3*r3;
+		    						   
+			    					   pos_x1 = (float) x3;
+			    					   pos_y1 = (float) ((-B1-Math.sqrt(B1*B1-4*A1*C1))/(2*A1));
+		    								   
+			    					   pos_x2 = (float) x1;
+			    					   pos_y2 = (float) ((-B1+Math.sqrt(B1*B1-4*A1*C1))/(2*A1));
+		    					   }		    					   
+		    					   
+		    					   // find a closer distance point
+		    					   float pos_distance1 = (float) Math.sqrt((Math.abs(pos_x1-px1_pos)*Math.abs(pos_x1-px1_pos)+(Math.abs(pos_y1-py1_pos)*Math.abs(pos_y1-py1_pos))));
+		    					   float pos_distance2 = (float) Math.sqrt((Math.abs(pos_x2-px1_pos)*Math.abs(pos_x2-px1_pos)+(Math.abs(pos_y2-py1_pos)*Math.abs(pos_y2-py1_pos))));
+		    				    					   
+		    					   if (pos_distance1 < pos_distance2)
+		    					   {
+		    						   pos_distance = pos_distance1;
+		    						   pos_x = pos_x1;
+		    						   pos_y = pos_y1;
+		    					   }
+		    					   else
+		    					   {
+		    						   pos_distance = pos_distance2;
+		    						   pos_x = pos_x2;
+		    						   pos_y = pos_y2;
+		    					   }
+		    					   
+		    					   double m_neg = (py1_neg-thirdBeacon.getY())/(px1_neg-thirdBeacon.getX()); 
+		    					   double c_neg = thirdBeacon.getY() - m_neg*thirdBeacon.getX();
+
+		    					   if ((px1_neg-thirdBeacon.getX()) != 0)
+		    					   {		    
+		    						   Log.i("BEACON", "SLOPE IS NOT INFINITE!!!");
+		    						   
+		    						   // two intersection points between a pos line and a third circle
+			    					   double p = thirdBeacon.getX();
+			    					   double q = thirdBeacon.getY();
+			    					   double r = thirdBeacon.getDistance();
+		    						   
+			    					   // coefficients for quadratic formula equation
+			    					   double A2 = m_neg*m_neg+1;
+			    					   double B2 = 2*(m_neg*c_neg-m_neg*q-p);
+			    					   double C2 = q*q-r*r+p*p-2*c_neg*q+c_neg*c_neg;
+			    					   
+			    					   neg_x1 = (float) ((-B2-Math.sqrt(B2*B2-4*A2*C2))/(2*A2));
+			    					   neg_y1 = (float) (m_neg * neg_x1 + c_neg);
+	
+			    					   neg_x2 = (float) ((-B2+Math.sqrt(B2*B2-4*A2*C2))/(2*A2));	    					   
+			    					   neg_y2 = (float) (m_neg * neg_x2 + c_neg);
+		    					   }
+		    					   else
+		    					   {
+		    						   Log.i("BEACON", "SLOPE IS INFINITE!!!");
+		    						   
+		    						   double x3 = thirdBeacon.getX();
+		    						   double y3 = thirdBeacon.getY();
+		    						   double r3 = thirdBeacon.getDistance();
+		    						   
+		    						   double A1 = 1;
+			    					   double B1 = -2 * y3;
+			    					   double C1 = y3*y3 - r3*r3;
+		    						   
+			    					   neg_x1 = (float) x3;
+			    					   neg_y1 = (float) ((-B1-Math.sqrt(B1*B1-4*A1*C1))/(2*A1));
+		    								   
+			    					   neg_x2 = (float) x1;
+			    					   neg_y2 = (float) ((-B1+Math.sqrt(B1*B1-4*A1*C1))/(2*A1));
+		    					   }
+		    					   
+		    					   // find a closer distance point
+		    					   float neg_distance1 = (float) Math.sqrt((Math.abs(neg_x1-px1_neg)*Math.abs(neg_x1-px1_neg)+(Math.abs(neg_y1-py1_neg)*Math.abs(neg_y1-py1_neg))));
+		    					   float neg_distance2 = (float) Math.sqrt((Math.abs(neg_x2-px1_neg)*Math.abs(neg_x2-px1_neg)+(Math.abs(neg_y2-py1_neg)*Math.abs(neg_y2-py1_neg))));
+		    				    					   
+		    					   if (neg_distance1 < neg_distance2)
+		    					   {
+		    						   neg_distance = neg_distance1;
+		    						   neg_x = neg_x1;
+		    						   neg_y = neg_y1;
+		    					   }
+		    					   else
+		    					   {
+		    						   neg_distance = neg_distance2;
+		    						   neg_x = neg_x2;
+		    						   neg_y = neg_y2;
+		    					   }
+		    					   
+		    					   if (pos_distance < neg_distance)
+		    					   {
+		    						   pointX = (px1_pos + pos_x)/2;
+		    						   pointY = (py1_pos + pos_y)/2;
+		    					   }
+		    					   else
+		    					   {
+		    						   pointX = (px1_neg + neg_x)/2;
+		    						   pointY = (py1_neg + neg_y)/2;
+		    					   }		    					   
+   		    					   
+								   if (showDebug)
+								   {
+									   canvas.drawCircle(calculateAdjustedX(pos_x), calculateAdjustedY(pos_y), debugPosRadius, debugPosPaint);	    					   
+									   canvas.drawCircle(calculateAdjustedX(neg_x), calculateAdjustedY(neg_y), debugPosRadius, debugPosPaint);
+								  
+									   canvas.drawLine(calculateAdjustedX((float)thirdBeacon.getX()), calculateAdjustedY((float)thirdBeacon.getY()), calculateAdjustedX((float)px1_pos), calculateAdjustedY((float)(px1_pos*m_pos+c_pos)), debugPosPaint);
+			    					   canvas.drawLine(calculateAdjustedX((float)thirdBeacon.getX()), calculateAdjustedY((float)thirdBeacon.getY()), calculateAdjustedX((float)px1_neg), calculateAdjustedY((float)(px1_neg*m_neg+c_neg)), debugPosPaint);
+		    					   }
+	    					   }			   
+	    					   
+	    	    			   break;*/
+	    				   }
 	    			   }
 	    			   // case #2b: two circles do not intersect
 	    			   else
@@ -198,42 +428,71 @@ public class FieldView extends View
 	    				   {
 	    					   Log.i("BEACON", "One circle is contained within another");
 	    					   
-	    					   // line that goes throught two center points: y = mx + c
+	    					   // line that goes through two center points: y = mx + c
 	    					   double m = (y2-y1)/(x2-x1);  
 	    					   double c = y1 - m*x1;
 	    					   
-	    					   //Log.i("BEACON", "m: " + m);
-	    					   //Log.i("BEACON", "c: " + c);
-	    					   
-	    					   // intersection point between line and circle 1;  
-	    					   double p1 = x1;
-	    					   double q1 = y1;
-	    					
-	    					   // coefficients for quadratic formula equation
-	    					   double A1 = m*m+1;
-	    					   double B1 = 2*(m*c-m*q1-p1);
-	    					   double C1 = q1*q1-r1*r1+p1*p1-2*c*q1+c*c;
-	    					   
-	    					   float px1_neg = (float) ((-B1-Math.sqrt(B1*B1-4*A1*C1))/(2*A1));
-	    					   float py1_neg = (float) ((m * (-B1-Math.sqrt(B1*B1-4*A1*C1))/(2*A1)) + c);
-
-	    					   float px1_pos = (float) ((-B1+Math.sqrt(B1*B1-4*A1*C1))/(2*A1));	    					   
-	    					   float py1_pos = (float) ((m * (-B1+Math.sqrt(B1*B1-4*A1*C1))/(2*A1)) + c);
-	    					   
-	    					   // intersection point between line and circle 2;  
-	    					   double p2 = x2;
-	    					   double q2 = y2;
-	    	    			   
-	    					   // coefficients for quadratic formula equation
-	    					   double A2 = m*m+1;
-	    					   double B2 = 2*(m*c-m*q2-p2);
-	    					   double C2 = q2*q2-r2*r2+p2*p2-2*c*q2+c*c;
-	    					   
-	    					   float px2_neg = (float) ((-B2-Math.sqrt(B2*B2-4*A2*C2))/(2*A2));
-	    					   float px2_pos = (float) ((-B2+Math.sqrt(B2*B2-4*A2*C2))/(2*A2));
-	    					   
-	    					   float py2_neg = (float) ((m * (-B2-Math.sqrt(B2*B2-4*A2*C2))/(2*A2)) + c);
-	    					   float py2_pos = (float) ((m * (-B2+Math.sqrt(B2*B2-4*A2*C2))/(2*A2)) + c);
+	    					   float px1_neg, py1_neg, px1_pos, py1_pos;
+	    					   float px2_neg, py2_neg, px2_pos, py2_pos;
+	    					   	    					   
+	    					   if ((x2-x1) != 0)
+	    					   {	
+	    						   //Log.i("BEACON", "SLOPE IS NOT INFINITE!!");
+	    						   
+		    					   // intersection point between line and circle 1;  
+		    					   double p1 = x1;
+		    					   double q1 = y1;
+		    					
+		    					   // coefficients for quadratic formula equation
+		    					   double A1 = m*m+1;
+		    					   double B1 = 2*(m*c-m*q1-p1);
+		    					   double C1 = q1*q1-r1*r1+p1*p1-2*c*q1+c*c;
+		    					   
+		    					   px1_neg = (float) ((-B1-Math.sqrt(B1*B1-4*A1*C1))/(2*A1));
+		    					   py1_neg = (float) ((m * (-B1-Math.sqrt(B1*B1-4*A1*C1))/(2*A1)) + c);
+	
+		    					   px1_pos = (float) ((-B1+Math.sqrt(B1*B1-4*A1*C1))/(2*A1));	    					   
+		    					   py1_pos = (float) ((m * (-B1+Math.sqrt(B1*B1-4*A1*C1))/(2*A1)) + c);
+		    					   
+		    					   // intersection point between line and circle 2;  
+		    					   double p2 = x2;
+		    					   double q2 = y2;
+		    	    			   
+		    					   // coefficients for quadratic formula equation
+		    					   double A2 = m*m+1;
+		    					   double B2 = 2*(m*c-m*q2-p2);
+		    					   double C2 = q2*q2-r2*r2+p2*p2-2*c*q2+c*c;
+		    					   
+		    					   px2_neg = (float) ((-B2-Math.sqrt(B2*B2-4*A2*C2))/(2*A2));
+		    					   px2_pos = (float) ((-B2+Math.sqrt(B2*B2-4*A2*C2))/(2*A2));
+		    					   
+		    					   py2_neg = (float) ((m * (-B2-Math.sqrt(B2*B2-4*A2*C2))/(2*A2)) + c);
+		    					   py2_pos = (float) ((m * (-B2+Math.sqrt(B2*B2-4*A2*C2))/(2*A2)) + c);
+	    					   }
+	    					   else
+	    					   {
+	    						   //Log.i("BEACON", "SLOPE IS INFINITE!!");
+	    						   
+	    						   double A1 = 1;
+		    					   double B1 = -2 * y1;
+		    					   double C1 = y1*y1 - r1*r1;
+	    						   
+	    						   px1_neg = (float) x1;
+	    						   py1_neg = (float) ((-B1-Math.sqrt(B1*B1-4*A1*C1))/(2*A1));
+	    								   
+	    						   px1_pos = (float) x1;
+	    						   py1_pos = (float) ((-B1+Math.sqrt(B1*B1-4*A1*C1))/(2*A1));
+	    						   
+	    						   double A2 = 1;
+		    					   double B2 = -2 * y2;
+		    					   double C2 = y2*y2 - r2*r2;
+	    						   
+		    					   px2_neg = (float) x2;
+	    						   py2_neg = (float) ((-B2-Math.sqrt(B2*B2-4*A2*C2))/(2*A2));
+	    								   
+	    						   px2_pos = (float) x2;
+	    						   py2_pos = (float) ((-B2+Math.sqrt(B2*B2-4*A2*C2))/(2*A2));
+	    					   }
 	    					   
 	    					   // pick pair of points that are closer together
 	    					   double d_xneg = Math.abs(px1_neg - px2_neg);
@@ -263,9 +522,15 @@ public class FieldView extends View
 	    						   intersect_y2 = py2_pos;
 	    					   }
 	    					   
-	    					   canvas.drawCircle(calculateAdjustedX(intersect_x1), calculateAdjustedY(intersect_y1), beaconRadius, currentPosPaint);	    					   
-	    					   canvas.drawCircle(calculateAdjustedX(intersect_x2), calculateAdjustedY(intersect_y2), beaconRadius, currentPosPaint);	    					   
-	    	    			   		    					   
+	    					   if (showDebug)
+	    					   {
+	    						   canvas.drawCircle(calculateAdjustedX(intersect_x1), calculateAdjustedY(intersect_y1), debugPosRadius, debugPosPaint);	    					   
+		    					   canvas.drawCircle(calculateAdjustedX(intersect_x2), calculateAdjustedY(intersect_y2), debugPosRadius, debugPosPaint);
+	    					   }
+	    					   
+	    					   pointX = (intersect_x1 + intersect_x2)/2;
+    						   pointY = (intersect_y1 + intersect_y2)/2;	    					   
+	    					       					   
 	    					   break;	    					   
 	    				   }
 	    				   // two circles lie outside of each other
@@ -277,23 +542,61 @@ public class FieldView extends View
 	    					   double m = (y2-y1)/(x2-x1);  
 	    					   double c = y1 - m*x1;
 	    					   
-	    					   //Log.i("BEACON", "m: " + m);
-	    					   //Log.i("BEACON", "c: " + c);
+	    					   float px1_neg, py1_neg, px1_pos, py1_pos;
+	    					   float px2_neg, py2_neg, px2_pos, py2_pos;
 	    					   
-	    					   // intersection point between line and circle 1;  
-	    					   double p1 = x1;
-	    					   double q1 = y1;
-	    					
-	    					   // coefficients for quadratic formula equation
-	    					   double A1 = m*m+1;
-	    					   double B1 = 2*(m*c-m*q1-p1);
-	    					   double C1 = q1*q1-r1*r1+p1*p1-2*c*q1+c*c;
-	    					   
-	    					   float px1_neg = (float) ((-B1-Math.sqrt(B1*B1-4*A1*C1))/(2*A1));
-	    					   float py1_neg = (float) ((m * (-B1-Math.sqrt(B1*B1-4*A1*C1))/(2*A1)) + c);
-
-	    					   float px1_pos = (float) ((-B1+Math.sqrt(B1*B1-4*A1*C1))/(2*A1));	    					   
-	    					   float py1_pos = (float) ((m * (-B1+Math.sqrt(B1*B1-4*A1*C1))/(2*A1)) + c);
+	    					   if ((x2-x1) != 0)
+	    					   {	    					   
+		    					   // intersection point between line and circle 1;  
+		    					   double p1 = x1;
+		    					   double q1 = y1;
+		    					
+		    					   // coefficients for quadratic formula equation
+		    					   double A1 = m*m+1;
+		    					   double B1 = 2*(m*c-m*q1-p1);
+		    					   double C1 = q1*q1-r1*r1+p1*p1-2*c*q1+c*c;
+		    					   
+		    					   px1_neg = (float) ((-B1-Math.sqrt(B1*B1-4*A1*C1))/(2*A1));
+		    					   py1_neg = (float) ((m * (-B1-Math.sqrt(B1*B1-4*A1*C1))/(2*A1)) + c);
+	
+		    					   px1_pos = (float) ((-B1+Math.sqrt(B1*B1-4*A1*C1))/(2*A1));	    					   
+		    					   py1_pos = (float) ((m * (-B1+Math.sqrt(B1*B1-4*A1*C1))/(2*A1)) + c);
+		    					   
+	   	    	    			   // intersection point between line and circle 2;  
+								   double p2 = x2;
+								   double q2 = y2;
+								   
+								   // coefficients for quadratic formula equation
+								   double A2 = m*m+1;
+								   double B2 = 2*(m*c-m*q2-p2);
+								   double C2 = q2*q2-r2*r2+p2*p2-2*c*q2+c*c;
+								   
+								   px2_neg = (float) ((-B2-Math.sqrt(B2*B2-4*A2*C2))/(2*A2));
+								   px2_pos = (float) ((-B2+Math.sqrt(B2*B2-4*A2*C2))/(2*A2));
+								   
+								   py2_neg = (float) ((m * (-B2-Math.sqrt(B2*B2-4*A2*C2))/(2*A2)) + c);
+								   py2_pos = (float) ((m * (-B2+Math.sqrt(B2*B2-4*A2*C2))/(2*A2)) + c);			   
+	    					   }
+	    					   else
+	    					   {
+	    						   Log.i("BEACON", "LIE OUTSIDE SLOPE IS INFINITE!!");
+	    						   px1_neg = px1_pos = (float) x1;
+	    						   px2_neg = px2_pos = (float) x1;
+	    						   
+	    						   double A1 = 1;
+		    					   double B1 = -2 * y1;
+		    					   double C1 = y1*y1-r1*r1;
+		    					   
+		    					   py1_pos = (float) ((-B1+Math.sqrt(B1*B1-4*A1*C1))/(2*A1));
+		    					   py1_neg = (float) ((-B1-Math.sqrt(B1*B1-4*A1*C1))/(2*A1));	
+		    					   
+		    					   double A2 = 1;
+		    					   double B2 = -2 * y2;
+		    					   double C2 = y2*y2-r2*r2;
+		    					   
+		    					   py2_pos = (float) ((-B2+Math.sqrt(B2*B2-4*A2*C2))/(2*A2));
+		    					   py2_neg = (float) ((-B2-Math.sqrt(B2*B2-4*A2*C2))/(2*A2));
+	    					   }
 	    					   
 	    					   // pick the point that is closer to the other circle
 	    					   double d1_xneg = Math.abs(px1_neg - x2);
@@ -316,22 +619,7 @@ public class FieldView extends View
 	    						   intersect_x1 = px1_pos;
 	    						   intersect_y1 = py1_pos;
 	    					   }
-	    					   	    	    			   
-	    	    			   // intersection point between line and circle 2;  
-	    					   double p2 = x2;
-	    					   double q2 = y2;
-	    	    			   
-	    					   // coefficients for quadratic formula equation
-	    					   double A2 = m*m+1;
-	    					   double B2 = 2*(m*c-m*q2-p2);
-	    					   double C2 = q2*q2-r2*r2+p2*p2-2*c*q2+c*c;
-	    					   
-	    					   float px2_neg = (float) ((-B2-Math.sqrt(B2*B2-4*A2*C2))/(2*A2));
-	    					   float px2_pos = (float) ((-B2+Math.sqrt(B2*B2-4*A2*C2))/(2*A2));
-	    					   
-	    					   float py2_neg = (float) ((m * (-B2-Math.sqrt(B2*B2-4*A2*C2))/(2*A2)) + c);
-	    					   float py2_pos = (float) ((m * (-B2+Math.sqrt(B2*B2-4*A2*C2))/(2*A2)) + c);
-	    					   
+	
 	    					   // pick the point that is closer to the other circle
 	    					   double d2_xneg = Math.abs(px2_neg - x1);
 	    					   double d2_yneg = Math.abs(py2_neg - y1);
@@ -354,14 +642,94 @@ public class FieldView extends View
 	    						   intersect_y2 = py2_pos;
 	    					   }
 	    					   
-	    					   canvas.drawCircle(calculateAdjustedX(intersect_x1), calculateAdjustedY(intersect_y1), beaconRadius, currentPosPaint);	    					   
-	    					   canvas.drawCircle(calculateAdjustedX(intersect_x2), calculateAdjustedY(intersect_y2), beaconRadius, currentPosPaint);	    					   
-	    	    			   	    					   
+	    					   if (showDebug)
+	    					   {
+		    					   canvas.drawCircle(calculateAdjustedX(intersect_x1), calculateAdjustedY(intersect_y1), debugPosRadius, debugPosPaint);	    					   
+		    					   canvas.drawCircle(calculateAdjustedX(intersect_x2), calculateAdjustedY(intersect_y2), debugPosRadius, debugPosPaint);	    					   
+	    					   }
+	    					   
+	    					   pointX = (intersect_x1 + intersect_x2)/2;
+    						   pointY = (intersect_y1 + intersect_y2)/2;
+	    					   
 	    					   break;
 	    				   }
 	    			   }
 	    		   }
 	    	   }
+	    	   
+	    	   if (pointX == -1 && pointY == -1)
+	    	   {	    		   
+	    		   return;
+		       }
+
+	    	   // Once "first position" is determined, iterate through other beacons to adjust the position
+	    	   for (; i < beaconLocationsList.size(); i++)
+	    	   {
+	    		   BeaconLocationItem beacon = beaconLocationsList.get(i);
+	    		   
+	    		   float x1 = pointX;
+	    		   float y1 = pointY;
+	    		   float x2 = beacon.getX();
+	    		   float y2 = beacon.getY();
+	    		   float r = beacon.getDistance();
+	    		   
+	    		   if (beacon.getRSSI() < RSSI_limit)
+	    			   continue;
+	    		   
+	    		   // line that goes throught two center points: y = mx + c
+				   double m = (y2-y1)/(x2-x1);  
+				   double c = y1 - m*x1;
+				   
+				   float px1_neg, py1_neg, px1_pos, py1_pos;
+				   
+				   if ((x2-x1) != 0)
+				   {	    					   
+					   // intersection point between line and circle 1;  
+					   double p = x2;
+					   double q = y2;
+					
+					   // coefficients for quadratic formula equation
+					   double A1 = m*m+1;
+					   double B1 = 2*(m*c-m*q-p);
+					   double C1 = q*q-r*r+p*p-2*c*q+c*c;
+					   
+					   px1_neg = (float) ((-B1-Math.sqrt(B1*B1-4*A1*C1))/(2*A1));
+					   py1_neg = (float) ((m * (-B1-Math.sqrt(B1*B1-4*A1*C1))/(2*A1)) + c);
+
+					   px1_pos = (float) ((-B1+Math.sqrt(B1*B1-4*A1*C1))/(2*A1));	    					   
+					   py1_pos = (float) ((m * (-B1+Math.sqrt(B1*B1-4*A1*C1))/(2*A1)) + c);
+					   
+					   // pick the point that is closer to the current point
+					   double d1_xneg = Math.abs(px1_neg - x1);
+					   double d1_yneg = Math.abs(py1_neg - y1);
+					   double d1_neg = Math.sqrt(d1_xneg * d1_xneg + d1_yneg * d1_yneg); 
+
+					   double d1_xpos = Math.abs(px1_pos - x1);
+					   double d1_ypos = Math.abs(py1_pos - y1);
+					   double d1_pos = Math.sqrt(d1_xpos * d1_xpos + d1_ypos * d1_ypos); 
+					   				   
+					   if (d1_neg < d1_pos)
+					   {
+						   pointX = (px1_neg + pointX)/2;
+						   pointY = (py1_neg + pointY)/2;
+					   }
+					   else
+					   {
+						   pointX = (px1_pos + pointX)/2;
+						   pointY = (py1_pos + pointY)/2;
+					   }
+				   }
+	    	   }
+	    	   
+	    	   if (pointX != -1 && pointY != -1)
+	    	   {	    		   
+		    	   // first point is now available...
+		    	   canvas.drawCircle(calculateAdjustedX(pointX), calculateAdjustedY(pointY), currentPosRadius, currentPosPaint);
+	    	   }
+	    	   
+	    	   
+	    	   // first point is now available...
+	    	   //canvas.drawCircle(calculateAdjustedX(pointX), calculateAdjustedY(pointY), currentPosRadius, currentPosPaint);   
 	       }
 		}
     }

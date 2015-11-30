@@ -20,6 +20,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -49,10 +50,14 @@ public class BeaconsActivity extends ActionBarActivity implements BeaconConsumer
 	
 	Intent intent;
 	
+	Context mContext;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_beacons);
+		
+		mContext = this;
 			
 		progressBar = (ProgressBar) findViewById(R.id.progressBar);
 		lvBeaconList = (ListView) findViewById(R.id.lvBeaconList);
@@ -84,6 +89,23 @@ public class BeaconsActivity extends ActionBarActivity implements BeaconConsumer
 					returnIntent.putExtra("beaconMinor", minor);
 					setResult(Activity.RESULT_OK, returnIntent);
 					finish();
+				}
+				else
+				{
+					TextView tvBeaconName = (TextView) v.findViewById(R.id.tvBeaconName);
+					TextView tvBeaconMajor = (TextView) v.findViewById(R.id.tvBeaconMajor);
+					TextView tvBeaconMinor = (TextView) v.findViewById(R.id.tvBeaconMinor);
+					
+					String name = tvBeaconName.getText().toString();
+					int major = Integer.parseInt(tvBeaconMajor.getText().toString());
+					int minor = Integer.parseInt(tvBeaconMinor.getText().toString());
+					
+					Intent intent = new Intent(mContext, CalibrationActivity.class);	
+					intent.putExtra("beaconName", name);
+					intent.putExtra("beaconMajor", major);
+					intent.putExtra("beaconMinor", minor);
+					
+					startActivity(intent);
 				}
 			}});
 		
