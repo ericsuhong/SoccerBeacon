@@ -71,10 +71,10 @@ public class TestBeaconsActivity extends ActionBarActivity implements BeaconCons
 		
 		// scan for new updates every 500 milliseconds
 		// default is 1100 milliseconds...
-		beaconManager.setForegroundScanPeriod(1100);
+		beaconManager.setForegroundScanPeriod(500);
 		beaconManager.setForegroundBetweenScanPeriod(0);
 		
-		beaconManager.setBackgroundScanPeriod(1100);
+		beaconManager.setBackgroundScanPeriod(500);
 		beaconManager.setBackgroundBetweenScanPeriod(0);
 		
 		beaconManager.bind(this);	
@@ -160,11 +160,15 @@ public class TestBeaconsActivity extends ActionBarActivity implements BeaconCons
                 			BeaconLocationItem beaconLocation = beaconLocationsList.get(i);
                 			if (beaconLocation.getMajor() == major && beaconLocation.getMinor() == minor)
                 			{         				
-                				beaconLocation.setRSSI(beaconLocation.getRSSI());
+                				beaconLocation.setPrevRSSI(beaconLocation.getRSSI());
+                				beaconLocation.setPrevDetectedTime(beaconLocation.getLastDetectedTime());                				
                 			
                 				Log.i("BEACON", "RSSI: " + major + ", " + minor + ": " + RSSI);
                 				
                 				beaconLocation.setRSSI(RSSI);
+                				
+                				long timestamp = System.currentTimeMillis();
+                				beaconLocation.setLastDetectedTime(timestamp);
                 				
                 				break;
                 			}                			

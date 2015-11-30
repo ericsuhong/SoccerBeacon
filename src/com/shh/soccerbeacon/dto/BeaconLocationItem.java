@@ -2,6 +2,8 @@ package com.shh.soccerbeacon.dto;
 
 import java.util.ArrayList;
 
+import android.util.Log;
+
 public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 {
 	private int xPos;
@@ -10,13 +12,14 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 	private int major;
 	private int minor;
 	
+	private int prevRSSI = 0;
+	private long prevDetectedTime = -1; // in milliseconds
+	
 	private int RSSI = 0;
+	private long lastDetectedTime = -1; // in milliseconds
 	
-	ArrayList<Integer> RSSIArray;
-	ArrayList<Long> timestampArray;
-				
 	private float distance = -1;
-	
+
 	// calibration data
 	private boolean calibrated = false;
 	private double calibrationA;
@@ -29,9 +32,6 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 		this.beaconName = beaconName;
 		this.major = major;
 		this.minor = minor;
-		
-		RSSIArray = new ArrayList<Integer>();
-		timestampArray = new ArrayList<Long>();
 	}
 
 	public String getBeaconName() {
@@ -46,47 +46,26 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 		return RSSI;
 	}
 	
-	public void setRSSI(int RSSI) 
-	{
+	public void setRSSI(int RSSI) {
 		this.RSSI = RSSI;
-		
-		long currentTime = System.currentTimeMillis();
-		
-		if (timestampArray.size() > 0)
-		{		
-			// if running sum was idle for more than 2.5 seconds, restart running sum
-			if (timestampArray.get(timestampArray.size()-1) < (currentTime - 2500))
-			{
-				RSSIArray.clear();
-				timestampArray.clear();
-			}
-		}
-		
-		RSSIArray.add(RSSI);	
-		timestampArray.add(currentTime);		
 	}
-		
-	public float getAverageRSSI() 
-	{
-		if (RSSIArray == null)
-			RSSIArray = new ArrayList<Integer>();
-		
-		if (timestampArray == null)
-			timestampArray = new ArrayList<Long>();
-		
-		if (RSSIArray.size() == 0)
-			return 0;
-		
-		int runningSum = 0;
-		
-		for (int i = 0; i < RSSIArray.size(); i++)
-		{
-			runningSum += RSSIArray.get(i);
-		}
-
-		return (float)runningSum/RSSIArray.size();
+	
+	public int getPrevRSSI() {
+		return prevRSSI;
+	}
+	
+	public void setPrevRSSI(int RSSI) {
+		this.prevRSSI = RSSI;
+	}
+	
+	public long getPrevDetectedTime() {
+		return prevDetectedTime;
 	}
 
+	public void setPrevDetectedTime(long prevDetectedTime) {
+		this.prevDetectedTime = prevDetectedTime;
+	}
+	
 	public int getMajor() {
 		return major;
 	}
@@ -119,6 +98,14 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 		this.yPos = yPos;
 	}
 	
+	public long getLastDetectedTime() {
+		return lastDetectedTime;
+	}
+
+	public void setLastDetectedTime(long lastDetectedTime) {
+		this.lastDetectedTime = lastDetectedTime;
+	}
+		
 	public float getDistance() {
 		return distance;
 	}
@@ -158,29 +145,61 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 	}
 	
 	public float distanceFunction(float RSSI)
-	{						
-		float distance = (float) Math.exp((-RSSI - calibrationA)/calibrationB);
+	{		
+		/*
+		double A = 0.0177;
+		double B = -3.065;
+		double C = -56.23-RSSI;
+		
+		float distance = (float) ((-B-Math.sqrt(B*B-4*A*C))/(2*A));
+				
+		Log.i("BEACON", "DISTANCE_NEG: " + distance);
+		
+		if (distance < 0)
+		{
+			return 0.5f;
+		}*/
+		
+		float distance = (float) Math.exp((-RSSI - 59.32)/12.7);
 		
 		if (distance < 0)
 		{
 			return 0.5f;
 		}
 		
-		//Log.i("BEACON", "DISTANCE: " + distance);
+		Log.i("BEACON", "DISTANCE: " + distance);
 		
 		return distance;
 	}
 
 	public float calculateDistance()
 	{
-	   if (getAverageRSSI() == 0)
+		long currentTime = System.currentTimeMillis();
+
+	   if (prevRSSI != 0 && prevDetectedTime != -1 && (currentTime - prevDetectedTime < 1500))
 	   {
-		   return -1;
+		   if (RSSI != 0 && lastDetectedTime != -1 && (currentTime - lastDetectedTime < 1500))
+		   {
+			   return (distanceFunction((prevRSSI + RSSI) / 2)); // running sum average
+		   }
+		   else
+		   {
+			   // this case should never happen
+			   Log.e("ERROR", "PREVRSSI IS MORE RECENT AND VALID THAN CURRENT RSSI! THIS CASE SHOULD NEVER HAPPEN!!!!!");
+			   return (distanceFunction(prevRSSI));
+		   }
 	   }
 	   else
 	   {
-		   return distanceFunction(getAverageRSSI());
-	   }		  
+		   if (RSSI != 0 && lastDetectedTime != -1 && (currentTime - lastDetectedTime < 1500))
+		   {
+			   return distanceFunction(RSSI);
+		   }
+		   else
+		   {
+			   return -1;
+		   }			   
+	   }
 	}
 
 	// sort by distance, then by position

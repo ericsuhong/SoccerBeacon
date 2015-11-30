@@ -83,8 +83,8 @@ public class CalibrationActivity extends ActionBarActivity implements BeaconCons
 			y[i] = 0;
 		}
 		
-		y[0] = 62.2903;
-		y[1] = 67.2258;
+		y[0] = 56.2903;
+		y[1] = 64.2258;
 		y[2] = 70.4193;
 		y[3] = 75.1562;
 		y[4] = 77.8387;

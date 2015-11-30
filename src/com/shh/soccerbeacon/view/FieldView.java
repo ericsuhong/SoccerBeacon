@@ -125,11 +125,8 @@ public class FieldView extends View
 	    		   
 	    		   if (showDebug)
 	    		   {
-	    			   if (beacon.getAverageRSSI() != 0)
-	    			   {
-	    				   canvas.drawText("" + beacon.getRSSI(), calculateAdjustedX(beacon.getX()), calculateAdjustedY(beacon.getY()) + beaconRadius + beaconRadius+beaconRadius, textPaint);
-	    				   canvas.drawText("" + beacon.getAverageRSSI() + ", " + String.format("%.3f", beacon.getDistance()) + "m", calculateAdjustedX(beacon.getX()), calculateAdjustedY(beacon.getY()) + beaconRadius + beaconRadius+beaconRadius+beaconRadius, textPaint); 
-	    			   }
+	    			   if (beacon.getRSSI() != 0)
+	    				   canvas.drawText("" + beacon.getRSSI() + ", " + String.format("%.3f", beacon.getDistance()) + "m", calculateAdjustedX(beacon.getX()), calculateAdjustedY(beacon.getY()) + beaconRadius + beaconRadius+beaconRadius, textPaint); 
 	    		   }	    			   
 	    	   }
 	    	   	    	   
@@ -670,25 +667,41 @@ public class FieldView extends View
 	    	   {	    		   
 	    		   return;
 		       }
+	    	   
+	    	   i++;
+	    	   
+	    	   boolean isThirdBeacon = true;
 
 	    	   // if third beacon is available...	    	   
-	    	   if (i+1 < beaconLocationsList.size())
+	    	   for (; i < beaconLocationsList.size(); i++)
 	    	   {
-	    		   BeaconLocationItem thirdBeacon = beaconLocationsList.get(i+1);
+	    		   BeaconLocationItem extraBeacon = beaconLocationsList.get(i);
+	    		   
+	    		   float distance = extraBeacon.getDistance();
+	    		   
+	    		   // trim for third beacon only
+	    		   if (isThirdBeacon)
+	    		   {
+	    			   if (distance > 5)
+	    				   distance = 4;	
+	    		   }
+	    		   
+	    		   // do not look at faraway extra beacons
+	    		   if (distance > 4)
+	    		   {
+	    			   break;
+	    		   }
 	    		   
 	    		   if (showRange)
 	    		   {		    		   
-		    		   float distance = thirdBeacon.getDistance();
-		    		   //Log.i("BEACON", "distance: " + distance);
-		    		   
-	    			   canvas.drawCircle(calculateAdjustedX(thirdBeacon.getX()), calculateAdjustedY(thirdBeacon.getY()), calculateAdjustedDistance(distance), beaconRangePaint);    		   
+	    			   canvas.drawCircle(calculateAdjustedX(extraBeacon.getX()), calculateAdjustedY(extraBeacon.getY()), calculateAdjustedDistance(distance), beaconRangePaint);    		   
 	    		   }
 	    		   
 	    		   float x1 = pointX;
 	    		   float y1 = pointY;
-	    		   float x2 = thirdBeacon.getX();
-	    		   float y2 = thirdBeacon.getY();
-	    		   float r = thirdBeacon.getDistance();
+	    		   float x2 = extraBeacon.getX();
+	    		   float y2 = extraBeacon.getY();
+	    		   float r = distance;
 	    		   
 	    		   // line that goes throught two center points: y = mx + c
 				   double m = (y2-y1)/(x2-x1);  
