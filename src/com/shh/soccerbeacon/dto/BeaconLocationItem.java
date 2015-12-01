@@ -12,11 +12,9 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 	private int major;
 	private int minor;
 	
-	private int prevRSSI = 0;
-	private long prevDetectedTime = -1; // in milliseconds
-	
+	private ArrayList<Integer> RSSIArray = new ArrayList<Integer>();
+
 	private int RSSI = 0;
-	private long lastDetectedTime = -1; // in milliseconds
 	
 	private float distance = -1;
 
@@ -46,26 +44,20 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 		return RSSI;
 	}
 	
-	public void setRSSI(int RSSI) {
+	public void setRSSI(int RSSI) 
+	{
+		if (RSSIArray == null)
+			RSSIArray = new ArrayList<Integer>();
+		
+		if (RSSIArray.size() >= 4)
+		{
+			RSSIArray.remove(0);
+		}
+		
+		RSSIArray.add(RSSI);
 		this.RSSI = RSSI;
 	}
-	
-	public int getPrevRSSI() {
-		return prevRSSI;
-	}
-	
-	public void setPrevRSSI(int RSSI) {
-		this.prevRSSI = RSSI;
-	}
-	
-	public long getPrevDetectedTime() {
-		return prevDetectedTime;
-	}
-
-	public void setPrevDetectedTime(long prevDetectedTime) {
-		this.prevDetectedTime = prevDetectedTime;
-	}
-	
+		
 	public int getMajor() {
 		return major;
 	}
@@ -98,14 +90,6 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 		this.yPos = yPos;
 	}
 	
-	public long getLastDetectedTime() {
-		return lastDetectedTime;
-	}
-
-	public void setLastDetectedTime(long lastDetectedTime) {
-		this.lastDetectedTime = lastDetectedTime;
-	}
-		
 	public float getDistance() {
 		return distance;
 	}
@@ -167,39 +151,30 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 			return 0.5f;
 		}
 		
-		Log.i("BEACON", "DISTANCE: " + distance);
+		//Log.i("BEACON", "DISTANCE: " + distance);
 		
 		return distance;
 	}
 
 	public float calculateDistance()
 	{
-		long currentTime = System.currentTimeMillis();
-
-	   if (prevRSSI != 0 && prevDetectedTime != -1 && (currentTime - prevDetectedTime < 1500))
-	   {
-		   if (RSSI != 0 && lastDetectedTime != -1 && (currentTime - lastDetectedTime < 1500))
-		   {
-			   return (distanceFunction((prevRSSI + RSSI) / 2)); // running sum average
-		   }
-		   else
-		   {
-			   // this case should never happen
-			   Log.e("ERROR", "PREVRSSI IS MORE RECENT AND VALID THAN CURRENT RSSI! THIS CASE SHOULD NEVER HAPPEN!!!!!");
-			   return (distanceFunction(prevRSSI));
-		   }
-	   }
-	   else
-	   {
-		   if (RSSI != 0 && lastDetectedTime != -1 && (currentTime - lastDetectedTime < 1500))
-		   {
-			   return distanceFunction(RSSI);
-		   }
-		   else
-		   {
-			   return -1;
-		   }			   
-	   }
+		if (RSSIArray == null)
+		{
+			RSSIArray = new ArrayList<Integer>();
+			return -1;
+		}	
+		
+		int runningSum = 0;
+		float avgRSSI = 0;
+		
+		for (int i = 0; i < RSSIArray.size(); i++)
+		{
+			runningSum += RSSIArray.get(i);
+		}
+		
+		avgRSSI = (float) runningSum / RSSIArray.size();
+		
+		return (distanceFunction(avgRSSI));
 	}
 
 	// sort by distance, then by position

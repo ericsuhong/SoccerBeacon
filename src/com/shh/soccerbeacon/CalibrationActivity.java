@@ -83,16 +83,16 @@ public class CalibrationActivity extends ActionBarActivity implements BeaconCons
 			y[i] = 0;
 		}
 		
-		y[0] = 56.2903;
-		y[1] = 64.2258;
-		y[2] = 70.4193;
-		y[3] = 75.1562;
-		y[4] = 77.8387;
-		y[5] = 78.8060;
-		y[6] = 80.6770;
-		y[7] = 84.5480;
-		y[8] = 85.5480;
-		y[9] = 87.5800;
+		y[0] = 58.2903;
+		y[1] = 66.2258;
+		y[2] = 72.4193;
+		y[3] = 77.1562;
+		y[4] = 79.8387;
+		y[5] = 80.8060;
+		y[6] = 82.6770;
+		y[7] = 86.5480;
+		y[8] = 87.5480;
+		y[9] = 89.5800;
 		
 		Intent intent = getIntent();
 		beaconName = intent.getStringExtra("beaconName");
@@ -164,11 +164,11 @@ public class CalibrationActivity extends ActionBarActivity implements BeaconCons
 		beaconManager.getBeaconParsers().add(new BeaconParser().
 	               setBeaconLayout("m:0-3=4c000215,i:4-19,i:20-21,i:22-23,p:24-24"));
 		
-		// scan for new updates every 1500 milliseconds to allow selecting beacons with more ease....
-		beaconManager.setForegroundScanPeriod(1500);
+		// calibrate every 500ms
+		beaconManager.setForegroundScanPeriod(500);
 		beaconManager.setForegroundBetweenScanPeriod(0);
 		
-		beaconManager.setBackgroundScanPeriod(1500);
+		beaconManager.setBackgroundScanPeriod(500);
 		beaconManager.setBackgroundBetweenScanPeriod(0);
 	}
 	

@@ -2,6 +2,7 @@ package com.shh.soccerbeacon.view;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 import com.shh.soccerbeacon.R;
 import com.shh.soccerbeacon.dto.BeaconLocationItem;
@@ -49,7 +50,9 @@ public class FieldView extends View
 	Paint beaconRangePaint;
 	Paint currentPosPaint;
 	Paint debugPosPaint;
-		
+
+	private boolean closestBeaconFirst = true;
+	
     public FieldView(Context context, AttributeSet attrs) 
     {
         super(context, attrs);
@@ -670,39 +673,63 @@ public class FieldView extends View
 	    	   
 	    	   i++;
 	    	   
-	    	   boolean isThirdBeacon = true;
-
+	    	   BeaconLocationItem thirdBeacon = null;
+	    	   
 	    	   // if third beacon is available...	    	   
-	    	   for (; i < beaconLocationsList.size(); i++)
+	    	   if (!closestBeaconFirst)
 	    	   {
-	    		   BeaconLocationItem extraBeacon = beaconLocationsList.get(i);
+		    	   if (i < beaconLocationsList.size())
+		    	   {
+		    		   thirdBeacon = beaconLocationsList.get(i);
+		    	   }
+	    	   }
+	    	   else
+	    	   {
+	    		   ArrayList<BeaconLocationItem> closeBeaconList = (ArrayList<BeaconLocationItem>) beaconLocationsList.clone();
+	    		   closeBeaconList.remove(0);
+	    		   closeBeaconList.remove(0);	    		   
 	    		   
-	    		   float distance = extraBeacon.getDistance();
-	    		   
-	    		   // trim for third beacon only
-	    		   if (isThirdBeacon)
-	    		   {
-	    			   if (distance > 5)
-	    				   distance = 4;	
-	    		   }
-	    		   
-	    		   // do not look at faraway extra beacons
-	    		   if (distance > 4)
-	    		   {
-	    			   break;
-	    		   }
-	    		   
+	    		   if (closeBeaconList.size() > 0)
+	    		   {	    			   
+	    			   final float pointX_fixed = pointX;
+		    		   final float pointY_fixed = pointY;
+		    		   	
+		    		   // sort by distance from this point
+		    		   Collections.sort(closeBeaconList, new Comparator<BeaconLocationItem>()
+		    			{
+		    	            public int compare(BeaconLocationItem p1, BeaconLocationItem p2) 
+		    	            {
+			    			   	double d1 = Math.sqrt(Math.abs(pointX_fixed - p1.getX())*Math.abs(pointX_fixed - p1.getX()) + Math.abs(pointY_fixed - p1.getY())*Math.abs(pointY_fixed - p1.getY()));
+			    			   	double d2 = Math.sqrt(Math.abs(pointX_fixed - p2.getX())*Math.abs(pointX_fixed - p2.getX()) + Math.abs(pointY_fixed - p2.getY())*Math.abs(pointY_fixed - p2.getY()));
+			    			   	
+			    			   	if (d1 < d2)
+			    			   		return -1;
+			    			   	else if (d1 == d2)
+			    			   		return 0;
+			    			   	else
+			    			   		return 1;			   	
+		    	            }
+		    	        });  		   
+		    		   
+		    		   thirdBeacon = closeBeaconList.get(0);
+	    		   }	    		   
+	    	   }
+	    	   
+	    	   if (thirdBeacon != null)
+	    	   {
+	    		   float distance = thirdBeacon.getDistance();	    		   
+	
 	    		   if (showRange)
 	    		   {		    		   
-	    			   canvas.drawCircle(calculateAdjustedX(extraBeacon.getX()), calculateAdjustedY(extraBeacon.getY()), calculateAdjustedDistance(distance), beaconRangePaint);    		   
+	    			   canvas.drawCircle(calculateAdjustedX(thirdBeacon.getX()), calculateAdjustedY(thirdBeacon.getY()), calculateAdjustedDistance(distance), beaconRangePaint);    		   
 	    		   }
 	    		   
 	    		   float x1 = pointX;
 	    		   float y1 = pointY;
-	    		   float x2 = extraBeacon.getX();
-	    		   float y2 = extraBeacon.getY();
+	    		   float x2 = thirdBeacon.getX();
+	    		   float y2 = thirdBeacon.getY();
 	    		   float r = distance;
-	    		   
+		    		   
 	    		   // line that goes throught two center points: y = mx + c
 				   double m = (y2-y1)/(x2-x1);  
 				   double c = y1 - m*x1;
@@ -746,7 +773,7 @@ public class FieldView extends View
 						   pointY = (py1_pos + pointY)/2;
 					   }
 				   }
-	    	   }
+	    	   }    	   
 	    	   
 	    	   if (pointX != -1 && pointY != -1)
 	    	   {	    		   

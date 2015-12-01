@@ -159,16 +159,10 @@ public class TestBeaconsActivity extends ActionBarActivity implements BeaconCons
                 		{
                 			BeaconLocationItem beaconLocation = beaconLocationsList.get(i);
                 			if (beaconLocation.getMajor() == major && beaconLocation.getMinor() == minor)
-                			{         				
-                				beaconLocation.setPrevRSSI(beaconLocation.getRSSI());
-                				beaconLocation.setPrevDetectedTime(beaconLocation.getLastDetectedTime());                				
-                			
+                			{         	          				
                 				Log.i("BEACON", "RSSI: " + major + ", " + minor + ": " + RSSI);
                 				
                 				beaconLocation.setRSSI(RSSI);
-                				
-                				long timestamp = System.currentTimeMillis();
-                				beaconLocation.setLastDetectedTime(timestamp);
                 				
                 				break;
                 			}                			
