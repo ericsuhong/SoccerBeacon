@@ -20,20 +20,24 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 	
 	private int runningSumCount = -1;
 
-	// calibration data
-	private boolean calibrated = false;
-	private double calibrationA;
-	private double calibrationB;
+	// TWO DEFAULT CALIBRATION PARAMETERS
+	private double defaultA = -53.35;
+	private double defaultB = -11.84;
 
-	public BeaconLocationItem(float xPos, float yPos, String beaconName, int major, int minor, int runningSumCount)
+	// manual calibration data
+	private boolean isManual = false;
+	private double manualA = 0;
+	private double manualB = 0;
+
+	private int shiftC = 0;
+	
+	public BeaconLocationItem(float xPos, float yPos, String beaconName, int major, int minor)
 	{
 		this.xPos = xPos;
 		this.yPos = yPos;
 		this.beaconName = beaconName;
 		this.major = major;
-		this.minor = minor;
-		
-		this.runningSumCount = runningSumCount;
+		this.minor = minor;				
 	}
 
 	public String getBeaconName() {
@@ -52,7 +56,7 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 	{
 		if (RSSIArray == null)
 			RSSIArray = new ArrayList<Integer>();
-		
+				
 		if (RSSIArray.size() >= this.runningSumCount)
 		{
 			RSSIArray.remove(0);
@@ -94,6 +98,10 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 		this.yPos = yPos;
 	}
 	
+	public void setRunningSumCount(int runningSumCount) {
+		this.runningSumCount = runningSumCount;
+	}
+	
 	public float getDistance() {
 		return distance;
 	}
@@ -101,62 +109,83 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 	public void setDistance(float distance) {
 		this.distance = distance;
 	}
-		
-	public boolean isCalibrated()
-	{
-		return calibrated;
+	
+	
+	public double getDefaultA() {
+		return defaultA;
+	}
+
+	public void setDefaultA(double defaultA) {
+		this.defaultA = defaultA;
+	}
+
+	public double getDefaultB() {
+		return defaultB;
+	}
+
+	public void setDefaultB(double defaultB1) {
+		this.defaultB = defaultB1;
 	}
 	
-	public void setCalibrated(boolean calibrated)
-	{
-		this.calibrated = calibrated;
+	public int getShiftC() {
+		return shiftC;
 	}
 	
-	public double getCalibrationA()
+	public void setShiftC(int shiftC) {
+		this.shiftC = shiftC;
+	}
+
+
+	public boolean isManual()
 	{
-		return calibrationA;
+		return isManual;
 	}
 	
-	public void setCalibrationA(double a)
+	public void setManual(boolean isManual)
 	{
-		this.calibrationA = a;
+		this.isManual = isManual;
 	}
 	
-	public double getCalibrationB()
+	public double getManualA()
 	{
-		return calibrationB;
+		return manualA;
 	}
 	
-	public void setCalibrationB(double b)
+	public void setManualA(double manualA)
 	{
-		this.calibrationB = b;
+		this.manualA = manualA;
+	}
+	
+	public double getManualB()
+	{
+		return manualB;
+	}
+	
+	public void setManualB(double manualB)
+	{
+		this.manualB = manualB;
 	}
 	
 	public float distanceFunction(float RSSI)
-	{		
-		/*
-		double A = 0.0177;
-		double B = -3.065;
-		double C = -56.23-RSSI;
+	{			
+		//float distance = (float) Math.exp((-RSSI - 59.32)/12.7);
 		
-		float distance = (float) ((-B-Math.sqrt(B*B-4*A*C))/(2*A));
-				
-		Log.i("BEACON", "DISTANCE_NEG: " + distance);
+		float distance;
 		
-		if (distance < 0)
+		if (isManual)
+		{			
+			distance = (float) Math.exp((RSSI-manualA)/manualB);
+		}
+		else
 		{
-			return 0.5f;
-		}*/
-		
-		float distance = (float) Math.exp((-RSSI - 59.32)/12.7);
-		
+			distance = (float) Math.exp((RSSI-defaultA)/defaultB);
+		}
+						
 		if (distance < 0)
 		{
 			return 0.5f;
 		}
-		
-		//Log.i("BEACON", "DISTANCE: " + distance);
-		
+				
 		return distance;
 	}
 
@@ -195,15 +224,15 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 		}
 		else
 		{		
-			if (this.xPos > target.xPos)
+			if (this.yPos > target.yPos)
 			{
 				return 1;
 			}
-			else if (this.xPos == target.xPos)
+			else if (this.yPos == target.yPos)
 			{
-				if (this.yPos > target.yPos)
+				if (this.xPos > target.xPos)
 					return 1;
-				else if (this.yPos == target.yPos)
+				else if (this.xPos == target.xPos)
 					return 0;
 				else
 					return -1;

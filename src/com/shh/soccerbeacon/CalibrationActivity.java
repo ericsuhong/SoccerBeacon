@@ -86,6 +86,7 @@ public class CalibrationActivity extends ActionBarActivity implements BeaconCons
 		}
 		
 		// debug test values...
+		/*
 		y[0] = 58.2903;
 		y[1] = 66.2258;
 		y[2] = 72.4193;
@@ -95,13 +96,13 @@ public class CalibrationActivity extends ActionBarActivity implements BeaconCons
 		y[6] = 82.6770;
 		y[7] = 86.5480;
 		y[8] = 87.5480;
-		y[9] = 89.5800;
+		y[9] = 89.5800;*/
 		
 		Intent intent = getIntent();
 		beaconName = intent.getStringExtra("beaconName");
 		beaconMajor = intent.getIntExtra("beaconMajor", -1);
 		beaconMinor = intent.getIntExtra("beaconMinor", -1);
-		
+			
 		TextView tvBeaconName = (TextView) findViewById(R.id.tvBeaconName);
 		tvBeaconName.setText(beaconName);
 		
@@ -234,7 +235,7 @@ public class CalibrationActivity extends ActionBarActivity implements BeaconCons
                 			count++;
                 			avgRSSI = ((double)sumRSSI/count);
                 			
-                		    y[currentX] = -1 * avgRSSI;	
+                		    y[currentX] = avgRSSI;	
                 		}
                 	}           
                 	
@@ -312,7 +313,35 @@ public class CalibrationActivity extends ActionBarActivity implements BeaconCons
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		
-		if (id == R.id.action_submit) 
+		if (id == R.id.action_usedefault)
+		{
+			AlertDialog.Builder alertBuilder = new AlertDialog.Builder(mContext);
+            alertBuilder.setMessage("Do you want to use default calibration parameters?");
+            alertBuilder.setCancelable(true);
+            alertBuilder.setPositiveButton("SUBMIT",
+                    new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                	Intent returnIntent = new Intent();
+					returnIntent.putExtra("useManual", false);
+					returnIntent.putExtra("beaconMajor", beaconMajor);
+					returnIntent.putExtra("beaconMinor", beaconMinor);
+					
+					setResult(Activity.RESULT_OK, returnIntent);
+					finish();
+                }
+            });
+            
+            alertBuilder.setNegativeButton("CANCEL",
+                    new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            });
+            
+            AlertDialog useDefaultAlert = alertBuilder.create();
+            useDefaultAlert.show();
+		}		
+		else if (id == R.id.action_submit) 
 		{			
 			int numCalibrated = 0;
 			
@@ -378,33 +407,36 @@ public class CalibrationActivity extends ActionBarActivity implements BeaconCons
 				final double a = coe[0];
 				final double b = coe[1];
 				
-				AlertDialog.Builder builder1 = new AlertDialog.Builder(mContext);
-	            builder1.setMessage("Calculated values:\nA: " + String.format("%.3f", a) + ", B: " + String.format("%.3f", b) + "\n\nDo you want to submit?");
-	            builder1.setCancelable(true);
-	            builder1.setPositiveButton("SUBMIT",
+				AlertDialog.Builder alertBuilder = new AlertDialog.Builder(mContext);
+	            alertBuilder.setMessage("Calculated values:\nA: " + String.format("%.3f", a) + ", B: " + String.format("%.3f", b) + "\n\nDo you want to submit?");
+	            alertBuilder.setCancelable(true);
+	            alertBuilder.setPositiveButton("SUBMIT",
 	                    new DialogInterface.OnClickListener() {
 	                public void onClick(DialogInterface dialog, int id) {
 	                	Intent returnIntent = new Intent();
+	                	returnIntent.putExtra("useManual", true);
 						returnIntent.putExtra("a", a);
 						returnIntent.putExtra("b", b);
 						returnIntent.putExtra("beaconMajor", beaconMajor);
 						returnIntent.putExtra("beaconMinor", beaconMinor);
+						
+						Log.i("BEACON", "beaconMajor sending: " + beaconMajor);
+
 						setResult(Activity.RESULT_OK, returnIntent);
 						finish();
 	                }
 	            });
 	            
-	            builder1.setNegativeButton("CANCEL",
+	            alertBuilder.setNegativeButton("CANCEL",
 	                    new DialogInterface.OnClickListener() {
 	                public void onClick(DialogInterface dialog, int id) {
 	                    dialog.cancel();
 	                }
 	            });
 
-	            AlertDialog alert11 = builder1.create();
-	            alert11.show();
+	            AlertDialog calibrateAlert = alertBuilder.create();
+	            calibrateAlert.show();
 			}
-
 			    
 			return true;
 		}

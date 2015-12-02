@@ -1,10 +1,13 @@
 package com.shh.soccerbeacon;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Random;
 
 import org.altbeacon.beacon.Beacon;
@@ -25,10 +28,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 
@@ -39,7 +45,7 @@ public class TestBeaconsActivity extends ActionBarActivity implements BeaconCons
 	ArrayList<BeaconLocationItem> beaconLocationsList;
 	
 	private BeaconManager beaconManager;
-
+		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -49,6 +55,11 @@ public class TestBeaconsActivity extends ActionBarActivity implements BeaconCons
 		
 		// load settings
 		int scanInterval = sharedPref.getInt("ScanInterval", 400);
+		int runningSumCount = sharedPref.getInt("RunningSumCount", -1);
+		float outlierDistance = sharedPref.getFloat("OutlierDistance", 3);
+		float outlierTrimFactor = sharedPref.getFloat("OutlierTrimFactor", 0.5f);
+		boolean useClosestBeacon = sharedPref.getBoolean("UseClosestBeacon", true);
+		
 		int displayMargin = sharedPref.getInt("DisplayMargin", 10);
 		
 		float fieldWidth = sharedPref.getFloat("FieldWidth", -1);
@@ -56,6 +67,9 @@ public class TestBeaconsActivity extends ActionBarActivity implements BeaconCons
 				
 		fvFieldView = (FieldView) findViewById(R.id.fvFieldView);
 		fvFieldView.setMargin(displayMargin);	
+		fvFieldView.setOutlierDistance(outlierDistance);
+		fvFieldView.setOutlierTrimFactor(outlierTrimFactor);	
+		fvFieldView.setUseClosestBeacon(useClosestBeacon);
 		fvFieldView.setFieldWidth(fieldWidth);
 		fvFieldView.setFieldHeight(fieldHeight);
 		
@@ -64,6 +78,12 @@ public class TestBeaconsActivity extends ActionBarActivity implements BeaconCons
 		Gson gson = new Gson();
 		Type collectionType = new TypeToken<Collection<BeaconLocationItem>>(){}.getType();
 		beaconLocationsList = (ArrayList<BeaconLocationItem>) gson.fromJson(beaconLocationsJSON, collectionType);
+		
+		// initialize running sum count for each beacon
+		for (int i = 0; i < beaconLocationsList.size(); i++)
+		{
+			beaconLocationsList.get(i).setRunningSumCount(runningSumCount);
+		}
 		
 		fvFieldView.setBeaconLocationsList(beaconLocationsList);	
 		
@@ -119,9 +139,12 @@ public class TestBeaconsActivity extends ActionBarActivity implements BeaconCons
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-		if (id == R.id.action_start)
+		if (id == R.id.action_screenshot)
 		{
+			takeScreenshot();
 			
+			Toast toast = Toast.makeText(this, "Screenshot saved", Toast.LENGTH_SHORT);
+			toast.show();
 		}
 		else if (id == R.id.option_show_circles) 
 		{
@@ -145,13 +168,11 @@ public class TestBeaconsActivity extends ActionBarActivity implements BeaconCons
 		beaconManager.setRangeNotifier(new RangeNotifier() {
             @Override 
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) 
-            {     
+            {                 	            	
         		Log.i("BEACON", "Beacon STARTED with size: " + beacons.size());
         		        		
             	if (beacons.size() > 0) 
-                {
-            		//Log.i("BEACON", "Beacon SIZE: " + beacons.size());            		
-            		
+                {            		
                 	for (Beacon current_beacon : beacons)
                 	{
                 		//Log.i("BEACON", "Beacon ID1: " + current_beacon.getId1() + " ID2: " + current_beacon.getId2() + " ID3: " + current_beacon.getBluetoothName() + " RSSI: " + current_beacon.getRssi());
@@ -165,7 +186,7 @@ public class TestBeaconsActivity extends ActionBarActivity implements BeaconCons
                 			BeaconLocationItem beaconLocation = beaconLocationsList.get(i);
                 			if (beaconLocation.getMajor() == major && beaconLocation.getMinor() == minor)
                 			{         	          				
-                				Log.i("BEACON", "RSSI: " + major + ", " + minor + ": " + RSSI);
+                				//Log.i("BEACON", "RSSI: " + major + ", " + minor + ": " + RSSI);
                 				
                 				beaconLocation.setRSSI(RSSI);
                 				
@@ -181,7 +202,7 @@ public class TestBeaconsActivity extends ActionBarActivity implements BeaconCons
             			beaconLocation.setDistance(beaconLocation.calculateDistance());            			
             		}     
                 }
-            	
+      	
             	runOnUiThread(new Runnable() {
           		     @Override
           		     public void run() {
@@ -197,5 +218,32 @@ public class TestBeaconsActivity extends ActionBarActivity implements BeaconCons
         {
     		Log.e("BEACON", "REMOTE ERROR" + e.getMessage());
         }		
+	}
+	
+	private void takeScreenshot() {
+	    Date now = new Date();
+	    android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
+
+	    try {
+	        // image naming and path  to include sd card  appending name you choose for file
+	        String mPath = Environment.getExternalStorageDirectory().toString() + "/Pictures/Screenshots/" + now + ".jpg";
+
+	        // create bitmap screen capture
+	        View v1 = getWindow().getDecorView().getRootView();
+	        v1.setDrawingCacheEnabled(true);
+	        Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+	        v1.setDrawingCacheEnabled(false);
+
+	        File imageFile = new File(mPath);
+
+	        FileOutputStream outputStream = new FileOutputStream(imageFile);
+	        int quality = 100;
+	        bitmap.compress(Bitmap.CompressFormat.PNG, quality, outputStream);
+	        outputStream.flush();
+	        outputStream.close();
+	    } catch (Throwable e) {
+	        // Several error may come out with file handling or OOM
+	        e.printStackTrace();
+	    }
 	}
 }

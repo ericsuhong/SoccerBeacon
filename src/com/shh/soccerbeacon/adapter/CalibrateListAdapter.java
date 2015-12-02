@@ -65,6 +65,8 @@ public class CalibrateListAdapter extends BaseAdapter {
 			holder.tvCalibrated = (TextView) convertView.findViewById(R.id.tvCalibrated);
 			holder.tvCalibrationA = (TextView) convertView.findViewById(R.id.tvCalibrationA);
 			holder.tvCalibrationB = (TextView) convertView.findViewById(R.id.tvCalibrationB);
+			holder.tvCalibrationC = (TextView) convertView.findViewById(R.id.tvCalibrationC);
+			
 			convertView.setTag(holder);
 		}
 		else 
@@ -78,25 +80,40 @@ public class CalibrateListAdapter extends BaseAdapter {
 		holder.tvBeaconMajor.setText("" + beaconLocationListItems.get(position).getMajor());
 		holder.tvBeaconMinor.setText("" + beaconLocationListItems.get(position).getMinor());
 		
-		if (beaconLocationListItems.get(position).isCalibrated())
+		BeaconLocationItem currentItem = beaconLocationListItems.get(position);
+		
+		if (currentItem.isManual())
 		{
-			holder.tvCalibrated.setTextColor(Color.GREEN);
-			holder.tvCalibrated.setText("CALIBRATED");
+			holder.tvCalibrated.setTextColor(Color.RED);
+			holder.tvCalibrated.setText("MANUAL");
 			
-			holder.tvCalibrationA.setText(String.format("%.3f", beaconLocationListItems.get(position).getCalibrationA()));
-			holder.tvCalibrationB.setText(String.format("%.3f", beaconLocationListItems.get(position).getCalibrationB()));
+			holder.tvCalibrationA.setText(String.format("%.3f", currentItem.getManualA()));
+			holder.tvCalibrationB.setText(String.format("%.3f", currentItem.getManualB()));
 		}
 		else
 		{
-			holder.tvCalibrated.setTextColor(Color.RED);
-			holder.tvCalibrated.setText("NOT CALIBRATED");
+			holder.tvCalibrated.setTextColor(Color.parseColor("#00EE11"));
+			holder.tvCalibrated.setText("USING DEFAULT");
 			
-			holder.tvCalibrationA.setText("???");
-			holder.tvCalibrationB.setText("???");
+			holder.tvCalibrationA.setText(String.format("%.3f", beaconLocationListItems.get(position).getDefaultA()));
+			holder.tvCalibrationB.setText(String.format("%.3f", beaconLocationListItems.get(position).getDefaultB()));			
 		}
-		
-		holder.tvCalibrationA = (TextView) convertView.findViewById(R.id.tvCalibrationA);
-		holder.tvCalibrationB = (TextView) convertView.findViewById(R.id.tvCalibrationB);
+				
+		if (currentItem.getShiftC() < 0)
+		{
+			holder.tvCalibrationC.setTextColor(Color.RED);
+			holder.tvCalibrationC.setText("" + currentItem.getShiftC());
+		}
+		else if (currentItem.getShiftC() > 0)
+		{
+			holder.tvCalibrationC.setTextColor(Color.RED);
+			holder.tvCalibrationC.setText("+" + currentItem.getShiftC());
+		}
+		else
+		{
+			holder.tvCalibrationC.setTextColor(Color.BLACK);
+			holder.tvCalibrationC.setText("" + currentItem.getShiftC());
+		}
 
 		return convertView;
 	}
@@ -111,6 +128,7 @@ public class CalibrateListAdapter extends BaseAdapter {
 		TextView tvCalibrated;
 		TextView tvCalibrationA;
 		TextView tvCalibrationB;
+		TextView tvCalibrationC;
 	}
 
 	public void updateAdapter(ArrayList<BeaconLocationItem> result)

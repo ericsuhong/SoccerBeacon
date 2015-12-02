@@ -88,18 +88,31 @@ public class CalibrateListActivity extends ActionBarActivity
 	        	double a = data.getDoubleExtra("a", 0);
 	        	double b = data.getDoubleExtra("b", 0);
 	        	
+	        	boolean useManual = data.getBooleanExtra("useManual", true);
 	        	int major = data.getIntExtra("beaconMajor", -1);
 	        	int minor = data.getIntExtra("beaconMinor", -1);
+	        	
+	        	//Log.i("BEACON", "useManual: " + useManual + ", major: " + major);
 	        		        	
 	        	for (int i = 0; i < beaconLocationsList.size(); i++)
-	        	{
+	        	{        		
 	        		BeaconLocationItem beacon = beaconLocationsList.get(i);
-	        		
+
 	        		if (beacon.getMajor() == major && beacon.getMinor() == minor)
 	        		{
-	        			beacon.setCalibrated(true);
-	        			beacon.setCalibrationA(a);
-	        			beacon.setCalibrationB(b);
+	        			if (useManual)
+	        			{	        			
+		        			beacon.setManual(true);
+		        			beacon.setManualA(a);
+		        			beacon.setManualB(b);
+		        			beacon.setShiftC(0);
+	        			}
+	        			else
+	        			{
+	        				beacon.setManual(false);
+	        				beacon.setShiftC(0);
+	        			}
+	        			
 	        			break;
 	        		}
 	        	}

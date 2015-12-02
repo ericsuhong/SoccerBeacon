@@ -5,9 +5,9 @@
     tools:context="com.shh.soccerbeacon.TestBeaconsActivity">
     
     <item
-        android:id="@+id/action_start"
+        android:id="@+id/action_screenshot"
         android:orderInCategory="100"
-        android:title="START"
+        android:title="SCREENSHOT"
         app:showAsAction="ifRoom"/>
     
     <item android:title="View Option"

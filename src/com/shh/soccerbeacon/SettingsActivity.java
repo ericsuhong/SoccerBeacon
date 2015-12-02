@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.Toast;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -19,6 +20,8 @@ public class SettingsActivity extends ActionBarActivity
 	EditText etRunningSumCount;
 	EditText etOutlierDistance;
 	EditText etOutlierTrimFactor;
+	RadioButton rbClosestBeacon;
+	RadioButton rbClosestDistance;
 	
 	Button btnSave;
 	
@@ -36,7 +39,9 @@ public class SettingsActivity extends ActionBarActivity
 		etRunningSumCount = (EditText) findViewById(R.id.etRunningSumCount);
 		etOutlierDistance = (EditText) findViewById(R.id.etOutlierDistance);
 		etOutlierTrimFactor = (EditText) findViewById(R.id.etOutlierTrimFactor);
-		
+		rbClosestBeacon = (RadioButton) findViewById(R.id.rbClosestBeacon);
+		rbClosestDistance = (RadioButton) findViewById(R.id.rbClosestDistance);
+				 
 		btnSave = (Button) findViewById(R.id.btnSave);
 		
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
@@ -45,7 +50,19 @@ public class SettingsActivity extends ActionBarActivity
 		int scanInterval = sharedPref.getInt("ScanInterval", 500);
 		int runningSumCount = sharedPref.getInt("RunningSumCount", 10);
 		float outlierDistance = sharedPref.getFloat("OutlierDistance", 5f);
-		float outlierTrimFactor = sharedPref.getFloat("OutlierTrimFactor", 0.5f);		
+		float outlierTrimFactor = sharedPref.getFloat("OutlierTrimFactor", 0.5f);	
+		boolean useClosestBeacon = sharedPref.getBoolean("UseClosestBeacon", true);
+		
+		if (useClosestBeacon)
+		{
+			rbClosestBeacon.setChecked(true);
+			rbClosestDistance.setChecked(false);
+		}
+		else
+		{
+			rbClosestBeacon.setChecked(false);
+			rbClosestDistance.setChecked(true);
+		}
 		
 		etDisplayMargin.setText("" + displayMargin);
 		etScanInterval.setText("" + scanInterval);
@@ -139,7 +156,9 @@ public class SettingsActivity extends ActionBarActivity
 				editor.putInt("RunningSumCount", runningSumCount);
 				editor.putFloat("OutlierDistance", outlierDistance);
 				editor.putFloat("OutlierTrimFactor", outlierTrimFactor);
-				
+				editor.putFloat("ThirdBeacon", outlierTrimFactor);
+				editor.putBoolean("UseClosestBeacon", rbClosestBeacon.isChecked());
+
 				editor.apply();		
 				
 				Toast toast = Toast.makeText(mContext, "Settings saved", Toast.LENGTH_SHORT);
@@ -148,5 +167,20 @@ public class SettingsActivity extends ActionBarActivity
 				finish();
 			}			
 		});
+	}
+	
+	public void onRadioButtonClicked(View view) {
+	    // Is the button now checked?
+	    boolean checked = ((RadioButton) view).isChecked();
+	    
+	    // Check which radio button was clicked
+	    switch(view.getId()) {
+	        case R.id.rbClosestBeacon:
+	            if (checked)
+	            break;
+	        case R.id.rbClosestDistance:
+	            if (checked)
+	            break;
+	    }
 	}
 }

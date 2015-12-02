@@ -160,7 +160,7 @@ public class BeaconLocationsActivity extends ActionBarActivity
 	        	int beaconMajor = data.getIntExtra("beaconMajor", -1);
 	        	int beaconMinor = data.getIntExtra("beaconMinor", -1);
 	        	
-	        	BeaconLocationItem item = new BeaconLocationItem(xPos, yPos, beaconName, beaconMajor, beaconMinor, runningSumCount);
+	        	BeaconLocationItem item = new BeaconLocationItem(xPos, yPos, beaconName, beaconMajor, beaconMinor);
 	        	beaconLocationsList.add(item);
 	        	
 	        	Collections.sort(beaconLocationsList);

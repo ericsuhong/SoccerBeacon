@@ -3,6 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.shh.soccerbeacon.MainActivity" >
 
+     <item
+        android:id="@+id/action_usedefault"
+        android:orderInCategory="100"
+        android:title="@string/action_usedefault"
+        app:showAsAction="ifRoom"/>
+    
     <item
         android:id="@+id/action_submit"
         android:orderInCategory="100"

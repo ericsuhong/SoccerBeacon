@@ -63,6 +63,7 @@ public class MainActivity extends ActionBarActivity
 		int runningSumCount = sharedPref.getInt("RunningSumCount", 10);
 		float outlierDistance = sharedPref.getFloat("OutlierDistance", 3f);
 		float outlierTrimFactor = sharedPref.getFloat("OutlierTrimFactor", 0.5f);
+		boolean useClosestBeacon = sharedPref.getBoolean("UseClosestBeacon", true);
 		float fieldWidth = sharedPref.getFloat("FieldWidth", -1f);
 		float fieldHeight = sharedPref.getFloat("FieldHeight", -1f);
 		String beaconLocations = sharedPref.getString("BeaconLocations", "[]");
@@ -73,6 +74,7 @@ public class MainActivity extends ActionBarActivity
 		editor.putInt("RunningSumCount", runningSumCount);
 		editor.putFloat("OutlierDistance", outlierDistance);
 		editor.putFloat("OutlierTrimFactor", outlierTrimFactor);
+		editor.putBoolean("useClosestBeacon", useClosestBeacon);
 		editor.putFloat("FieldWidth", fieldWidth);
 		editor.putFloat("FieldHeight", fieldHeight);
 		editor.putString("BeaconLocations", beaconLocations);
@@ -160,8 +162,8 @@ public class MainActivity extends ActionBarActivity
 		Type collectionType = new TypeToken<Collection<BeaconLocationItem>>(){}.getType();
 		beaconLocationsList = (ArrayList<BeaconLocationItem>) gson.fromJson(beaconLocationsJSON, collectionType);
 				
-		// need at least two beacon locations
-		if (beaconLocationsList.size() < 2)
+		// need at least one beacon locations
+		if (beaconLocationsList.size() < 1)
 		{
 			btnCalibrateBeacons.setEnabled(false);
 			btnStart.setEnabled(false);
@@ -172,17 +174,6 @@ public class MainActivity extends ActionBarActivity
 			btnCalibrateBeacons.setEnabled(true);
 			btnStart.setEnabled(true);
 			btnTest.setEnabled(true);
-			
-			for (int i = 0; i < beaconLocationsList.size(); i++)
-			{
-				BeaconLocationItem beacon = beaconLocationsList.get(i);
-				if (!beacon.isCalibrated())
-				{
-					btnStart.setEnabled(false);
-					btnTest.setEnabled(false);
-					break;
-				}				
-			}
 		}
 		
 		fvFieldView.setBeaconLocationsList(beaconLocationsList);

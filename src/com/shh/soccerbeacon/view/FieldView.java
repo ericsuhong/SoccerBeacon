@@ -20,6 +20,9 @@ import android.view.View;
 public class FieldView extends View 
 {
 	private int margin = 0;
+	private boolean useClosestBeacon = true;
+	private float outlierDistance = 3;
+	private float outlierTrimFactor = 0.5f;
 	
 	private float fieldWidth = -1;
 	private float fieldHeight = -1;
@@ -27,20 +30,21 @@ public class FieldView extends View
 	String fieldColor = "#35AE2F";
 	String beaconColor = "#EEEEEE";
 	String beaconRangeColor = "#000000";
-	String debugPosColor = "#00FFFF";
+	String highlightColor = "#00FFFF";
 	String oldPosColor = "#FF0000";
 	String currentPosColor = "#FFFF00";
 
 	float beaconRadius = 12;
 	float currentPosRadius = 5;
 	float debugPosRadius = 5;
+	float fontSize = 30;
 	
 	int bitmapWidth = 0;
 	int bitmapHeight = 0;
 	
 	boolean showBeacons = true;
 	boolean showRange = true;
-	boolean showDebug = true;
+	boolean showInfo = true;
 	
 	ArrayList<BeaconLocationItem> beaconLocationsList;
 	
@@ -52,15 +56,11 @@ public class FieldView extends View
 	Paint beaconRangePaint;
 	Paint oldPosPaint;
 	Paint currentPosPaint;
-	Paint debugPosPaint;
-
-	private boolean closestBeaconFirst = true;
+	Paint highlightPaint;
 	
 	ArrayList<Float> xList = new ArrayList<Float>();
 	ArrayList<Float> yList = new ArrayList<Float>();
-	
-	int count = 0;
-	
+			
     public FieldView(Context context, AttributeSet attrs) 
     {
         super(context, attrs);
@@ -73,7 +73,7 @@ public class FieldView extends View
 		
 		textPaint = new Paint();
 		textPaint.setColor(Color.BLACK); 
-		textPaint.setTextSize(22); 
+		textPaint.setTextSize(fontSize); 
 		
 		beaconRangePaint = new Paint();
 		beaconRangePaint.setColor(Color.parseColor(beaconRangeColor));
@@ -86,14 +86,16 @@ public class FieldView extends View
 		currentPosPaint = new Paint();
 		currentPosPaint.setColor(Color.parseColor(currentPosColor));
 		
-		debugPosPaint = new Paint();
-		debugPosPaint.setColor(Color.parseColor(debugPosColor));
+		highlightPaint = new Paint();
+		highlightPaint.setColor(Color.parseColor(highlightColor));
+		highlightPaint.setStyle(Paint.Style.STROKE);
+		highlightPaint.setStrokeWidth(4f);
     }
     
     @Override
 	protected void onDraw(Canvas canvas) {
     	super.onDraw(canvas);
-    	
+    	    	 	       	
     	bitmapWidth = canvas.getWidth();
     	bitmapHeight = canvas.getHeight();
     	
@@ -134,19 +136,19 @@ public class FieldView extends View
 	    		   if (showBeacons)
 	    		   {
 		    		   canvas.drawCircle(calculateAdjustedX(beacon.getX()), calculateAdjustedY(beacon.getY()), beaconRadius, beaconPaint);  		   
-		    		   canvas.drawText(beacon.getBeaconName(), calculateAdjustedX(beacon.getX()), calculateAdjustedY(beacon.getY()) + beaconRadius, textPaint); 
+		    		   canvas.drawText(beacon.getBeaconName(), calculateAdjustedX(beacon.getX()), calculateAdjustedY(beacon.getY()) + fontSize, textPaint); 
 	    		   }
 	    		   
-	    		   if (showDebug)
+	    		   if (showInfo)
 	    		   {
 	    			   if (beacon.getRSSI() != 0)
-	    				   canvas.drawText("" + beacon.getRSSI() + ", " + String.format("%.3f", beacon.getDistance()) + "m", calculateAdjustedX(beacon.getX()), calculateAdjustedY(beacon.getY()) + beaconRadius + beaconRadius+beaconRadius, textPaint); 
+	    				   canvas.drawText("" + beacon.getRSSI() + ", " + String.format("%.3f", beacon.getDistance()) + "m", calculateAdjustedX(beacon.getX()), calculateAdjustedY(beacon.getY()) + 2*fontSize, textPaint); 
 	    		   }	    			   
 	    	   }
 	    	   	    	   
 	    	   // current "closest" position discovered so far...
-	    	   float pointX = -1;
-	    	   float pointY = -1;
+	    	   float currentX = -1;
+	    	   float currentY = -1;
 	    	   
 	    	   int i;
 	    	   
@@ -166,7 +168,7 @@ public class FieldView extends View
 			    		   float distance = firstBeacon.getDistance();
 			    		   //Log.i("BEACON", "distance: " + distance);
 			    		   
-		    			   canvas.drawCircle(calculateAdjustedX(firstBeacon.getX()), calculateAdjustedY(firstBeacon.getY()), calculateAdjustedDistance(distance), beaconRangePaint);    		   
+		    			   canvas.drawCircle(calculateAdjustedX(firstBeacon.getX()), calculateAdjustedY(firstBeacon.getY()), calculateAdjustedDistance(distance), highlightPaint);    		   
 		    		   }
 	    		   }	    			   
 	    		   
@@ -190,7 +192,7 @@ public class FieldView extends View
 			    		   float distance = secondBeacon.getDistance();
 			    		   //Log.i("BEACON", "distance: " + distance);
 			    		   
-		    			   canvas.drawCircle(calculateAdjustedX(secondBeacon.getX()), calculateAdjustedY(secondBeacon.getY()), calculateAdjustedDistance(distance), beaconRangePaint);    		   
+		    			   canvas.drawCircle(calculateAdjustedX(secondBeacon.getX()), calculateAdjustedY(secondBeacon.getY()), calculateAdjustedDistance(distance), highlightPaint);    		   
 		    		   }
 	    			   
 	    			   //Log.i("BEACON", "Two circles available: " + firstBeacon.getBeaconName() + ", " + firstBeacon.getDistance() + ", " + secondBeacon.getBeaconName() + ", " + secondBeacon.getDistance());
@@ -241,19 +243,20 @@ public class FieldView extends View
 	    				   //Log.i("BEACON", "py1_neg, py1_pos: " + py1_neg + ", " + py1_pos);
     					   //Log.i("BEACON", "px1_neg, px1_pos: " + px1_neg + ", " + px1_pos);
 	    				   
-	    				   if (showRange && showDebug)
+	    				   /*
+	    				   if (showRange && showInfo)
     					   {
-	    					   canvas.drawCircle(calculateAdjustedX(px1_neg), calculateAdjustedY(py1_neg), debugPosRadius, debugPosPaint);	    					   
-	    					   canvas.drawCircle(calculateAdjustedX(px1_pos), calculateAdjustedY(py1_pos), debugPosRadius, debugPosPaint);	
-    					   }
+	    					   canvas.drawCircle(calculateAdjustedX(px1_neg), calculateAdjustedY(py1_neg), debugPosRadius, highlightPaint);	    					   
+	    					   canvas.drawCircle(calculateAdjustedX(px1_pos), calculateAdjustedY(py1_pos), debugPosRadius, highlightPaint);	
+    					   }*/
 	    				   
     					   // case #1: two circles intersect at one point
 	    				   if (px1_neg == px1_pos && py1_neg == py1_pos)
 	    				   {
 	    					   Log.i("BEACON", "Two circles intersect at ONE point");
 	    					   
-	    					   pointX = px1_pos;
-	    					   pointY = py1_pos;
+	    					   currentX = px1_pos;
+	    					   currentY = py1_pos;
 	    					   
 	    					   break;
 	    				   }
@@ -262,8 +265,8 @@ public class FieldView extends View
 	    				   {
 	    					   Log.i("BEACON", "Two circles intersect at TWO point");
 	    					   
-	    					   pointX = (px1_pos + px1_neg)/2;
-    						   pointY = (py1_pos + py1_neg)/2;	
+	    					   currentX = (px1_pos + px1_neg)/2;
+    						   currentY = (py1_pos + py1_neg)/2;	
     						   
     						   break;
 	    					   
@@ -542,14 +545,8 @@ public class FieldView extends View
 	    						   intersect_y2 = py2_pos;
 	    					   }
 	    					   
-	    					   if (showDebug)
-	    					   {
-	    						   canvas.drawCircle(calculateAdjustedX(intersect_x1), calculateAdjustedY(intersect_y1), debugPosRadius, debugPosPaint);	    					   
-		    					   canvas.drawCircle(calculateAdjustedX(intersect_x2), calculateAdjustedY(intersect_y2), debugPosRadius, debugPosPaint);
-	    					   }
-	    					   
-	    					   pointX = (intersect_x1 + intersect_x2)/2;
-    						   pointY = (intersect_y1 + intersect_y2)/2;	    					   
+	    					   currentX = (intersect_x1 + intersect_x2)/2;
+    						   currentY = (intersect_y1 + intersect_y2)/2;	    					   
 	    					       					   
 	    					   break;	    					   
 	    				   }
@@ -659,14 +656,14 @@ public class FieldView extends View
 	    						   intersect_y2 = py2_pos;
 	    					   }
 	    					   
-	    					   if (showDebug)
+	    					   if (showInfo)
 	    					   {
-		    					   canvas.drawCircle(calculateAdjustedX(intersect_x1), calculateAdjustedY(intersect_y1), debugPosRadius, debugPosPaint);	    					   
-		    					   canvas.drawCircle(calculateAdjustedX(intersect_x2), calculateAdjustedY(intersect_y2), debugPosRadius, debugPosPaint);	    					   
+		    					   canvas.drawCircle(calculateAdjustedX(intersect_x1), calculateAdjustedY(intersect_y1), debugPosRadius, highlightPaint);	    					   
+		    					   canvas.drawCircle(calculateAdjustedX(intersect_x2), calculateAdjustedY(intersect_y2), debugPosRadius, highlightPaint);	    					   
 	    					   }
 	    					   
-	    					   pointX = (intersect_x1 + intersect_x2)/2;
-    						   pointY = (intersect_y1 + intersect_y2)/2;
+	    					   currentX = (intersect_x1 + intersect_x2)/2;
+    						   currentY = (intersect_y1 + intersect_y2)/2;
 	    					   
 	    					   break;
 	    				   }
@@ -674,7 +671,7 @@ public class FieldView extends View
 	    		   }
 	    	   }
 	    	   
-	    	   if (pointX == -1 && pointY == -1)
+	    	   if (currentX == -1 && currentY == -1)
 	    	   {	    		   
 	    		   return;
 		       }
@@ -683,9 +680,9 @@ public class FieldView extends View
 	    	   
 	    	   BeaconLocationItem thirdBeacon = null;
 	    	   
-	    	   // if third beacon is available...	    	   
-	    	   if (!closestBeaconFirst)
+	    	   if (!useClosestBeacon)
 	    	   {
+	    		   // use closest distance third beacon
 		    	   if (i < beaconLocationsList.size())
 		    	   {
 		    		   thirdBeacon = beaconLocationsList.get(i);
@@ -699,8 +696,8 @@ public class FieldView extends View
 	    		   
 	    		   if (closeBeaconList.size() > 0)
 	    		   {	    			   
-	    			   final float pointX_fixed = pointX;
-		    		   final float pointY_fixed = pointY;
+	    			   final float pointX_fixed = currentX;
+		    		   final float pointY_fixed = currentY;
 		    		   	
 		    		   // sort by distance from this point
 		    		   Collections.sort(closeBeaconList, new Comparator<BeaconLocationItem>()
@@ -725,15 +722,15 @@ public class FieldView extends View
 	    	   
 	    	   if (thirdBeacon != null)
 	    	   {
-	    		   float distance = thirdBeacon.getDistance();	    		   
-	
+	    		   float distance = thirdBeacon.getDistance();	
+
 	    		   if (showRange)
 	    		   {		    		   
 	    			   canvas.drawCircle(calculateAdjustedX(thirdBeacon.getX()), calculateAdjustedY(thirdBeacon.getY()), calculateAdjustedDistance(distance), beaconRangePaint);    		   
 	    		   }
 	    		   
-	    		   float x1 = pointX;
-	    		   float y1 = pointY;
+	    		   float x1 = currentX;
+	    		   float y1 = currentY;
 	    		   float x2 = thirdBeacon.getX();
 	    		   float y2 = thirdBeacon.getY();
 	    		   float r = distance;
@@ -772,38 +769,46 @@ public class FieldView extends View
 					   				   
 					   if (d1_neg < d1_pos)
 					   {
-						   pointX = (px1_neg + pointX)/2;
-						   pointY = (py1_neg + pointY)/2;
+						   currentX = (px1_neg + currentX)/2;
+						   currentY = (py1_neg + currentY)/2;
 					   }
 					   else
 					   {
-						   pointX = (px1_pos + pointX)/2;
-						   pointY = (py1_pos + pointY)/2;
+						   currentX = (px1_pos + currentX)/2;
+						   currentY = (py1_pos + currentY)/2;
 					   }
 				   }
 	    	   }    	   
+	    	   	    	   
+	    	   // trim outliers...
+	    	   // compare the distance between current location and previous location
 	    	   
-	    	   count++;
-	    	   
-	    	   /*
-	    	   if (count % 2 == 0)
+	    	   if (xList.size() > 0)
 	    	   {
-	    		   Random rand = new Random();
-		    	   pointX = rand.nextFloat()*(fieldWidth+10)-5;
-		    	   pointY = rand.nextFloat()*(fieldHeight+10)-5;	    		   
+	    		   double prevX = xList.get(xList.size()-1); 
+	    		   double prevY = yList.get(yList.size()-1);
+	    		   
+	    		   float distancePrevCurrent = (float) Math.sqrt(Math.abs(prevX - currentX)*Math.abs(prevX - currentX) + Math.abs(prevY - currentY)*Math.abs(prevY - currentY));
+	    		   
+	    		   // trim the outlier if it is above or equal to the threshold
+	    		   if (distancePrevCurrent >= this.outlierDistance)
+	    		   {
+	    			   //Log.i("TRIM", "TRIMMING!!!");
+	    			   //Log.i("TRIM", "PrevX, PrevY: " + prevX + ", " + prevY);
+	    			   //Log.i("TRIM", "CurrX, CurrY: " + currentX + ", " + currentY);
+
+	    			   currentX = (float) ((currentX - prevX)*this.outlierTrimFactor + prevX);
+	    			   currentY = (float) ((currentY - prevY)*this.outlierTrimFactor + prevY);
+	    			   
+	    			   //Log.i("TRIM", "NewX, NewY: " + currentX + ", " + currentY);	    			   
+	    		   }
 	    	   }
-	    	   else
-	    	   {
-	    		   Random rand = new Random();
-		    	   pointX = rand.nextFloat()*(20);
-		    	   pointY = rand.nextFloat()*(fieldHeight);	
-	    	   }*/
-	    	   
-	    	   if (pointX != -1 && pointY != -1)
+
+	    	   if (currentX != -1 && currentY != -1)
 	    	   {	    		
-	    		   xList.add(pointX);
-		    	   yList.add(pointY);
-	    	   }	    	   	    	   
+	    		   xList.add(currentX);
+		    	   yList.add(currentY);
+	    	   }	    	   	 
 	    	  	
 	    	   // draw all circles gathered so far...
 	    	   for (int j = 0; j < xList.size(); j++)
@@ -826,6 +831,18 @@ public class FieldView extends View
 
 	public void setMargin(int margin) {
 		this.margin = margin;
+	}
+	
+	public void setOutlierDistance(float outlierDistance) {
+		this.outlierDistance = outlierDistance;
+	}
+	
+	public void setOutlierTrimFactor(float outlierTrimFactor) {
+		this.outlierTrimFactor = outlierTrimFactor;
+	}
+	
+	public void setUseClosestBeacon(boolean useClosestBeacon) {
+		this.useClosestBeacon = useClosestBeacon;
 	}
 
 	public float getFieldWidth() {
