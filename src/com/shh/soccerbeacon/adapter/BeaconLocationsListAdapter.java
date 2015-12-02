@@ -82,10 +82,7 @@ public class BeaconLocationsListAdapter extends BaseAdapter {
 		holder.tvBeaconMajor.setText("" + beaconLocationListItems.get(position).getMajor());
 		holder.tvBeaconMinor.setText("" + beaconLocationListItems.get(position).getMinor());
 		holder.tvBeaconRSSI.setText("" + beaconLocationListItems.get(position).getRSSI());
-		
-		final int xPos =  beaconLocationListItems.get(position).getX();
-		final int yPos =  beaconLocationListItems.get(position).getY();
-		
+
 		holder.ivDelete.setOnClickListener(new OnClickListener()
 		{
 			@Override

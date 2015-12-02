@@ -56,8 +56,27 @@ public class MainActivity extends ActionBarActivity
 		setContentView(R.layout.activity_main);
 		
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-		int fieldWidth = sharedPref.getInt("FieldWidth", -1);
-		int fieldHeight = sharedPref.getInt("FieldHeight", -1);
+		
+		// set default setting values
+		int displayMargin = sharedPref.getInt("DisplayMargin", 10);
+		int scanInterval = sharedPref.getInt("ScanInterval", 400);
+		int runningSumCount = sharedPref.getInt("RunningSumCount", 10);
+		float outlierDistance = sharedPref.getFloat("OutlierDistance", 3f);
+		float outlierTrimFactor = sharedPref.getFloat("OutlierTrimFactor", 0.5f);
+		float fieldWidth = sharedPref.getFloat("FieldWidth", -1f);
+		float fieldHeight = sharedPref.getFloat("FieldHeight", -1f);
+		String beaconLocations = sharedPref.getString("BeaconLocations", "[]");
+		
+		SharedPreferences.Editor editor = sharedPref.edit();
+		editor.putInt("DisplayMargin", displayMargin);
+		editor.putInt("ScanInterval", scanInterval);
+		editor.putInt("RunningSumCount", runningSumCount);
+		editor.putFloat("OutlierDistance", outlierDistance);
+		editor.putFloat("OutlierTrimFactor", outlierTrimFactor);
+		editor.putFloat("FieldWidth", fieldWidth);
+		editor.putFloat("FieldHeight", fieldHeight);
+		editor.putString("BeaconLocations", beaconLocations);
+		editor.apply();
 		
 		tvFieldWidth = (TextView) findViewById(R.id.tvFieldWidth);
 		tvFieldHeight = (TextView) findViewById(R.id.tvFieldHeight);
@@ -114,8 +133,8 @@ public class MainActivity extends ActionBarActivity
 		super.onResume();
 				
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-		int fieldWidth = sharedPref.getInt("FieldWidth", -1);
-		int fieldHeight = sharedPref.getInt("FieldHeight", -1);
+		float fieldWidth = sharedPref.getFloat("FieldWidth", -1);
+		float fieldHeight = sharedPref.getFloat("FieldHeight", -1);
 				
 		fvFieldView.setFieldWidth(fieldWidth);
 		fvFieldView.setFieldHeight(fieldHeight);
@@ -191,10 +210,6 @@ public class MainActivity extends ActionBarActivity
 			startActivity(intent);
 			    
 			return true;
-		}
-		else if (id == R.id.action_calibration) 
-		{
-
 		}
 		else if (id == R.id.action_settings) 
 		{

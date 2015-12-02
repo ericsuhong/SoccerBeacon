@@ -9,19 +9,11 @@
         android:title="@string/action_beacons"
         android:icon="@drawable/ic_beacons"
         app:showAsAction="ifRoom"/>
-    		         
-    <item
-        android:id="@+id/action_calibration"
-        android:orderInCategory="100"
-        android:title="@string/action_calibration"
-        android:icon="@drawable/ic_calibration"
-        app:showAsAction="ifRoom"/>
     
      <item
         android:id="@+id/action_settings"
         android:title="@string/action_settings"
         android:orderInCategory="100"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_settings">
+        app:showAsAction="always">
     </item>
 </menu>

@@ -65,8 +65,8 @@ public class BeaconsActivity extends ActionBarActivity implements BeaconConsumer
 		intent = getIntent();
 		clickable = intent.getBooleanExtra("clickable", false);
 		
-		final int xPos = intent.getIntExtra("xPos", -1);
-		final int yPos = intent.getIntExtra("yPos", -1);
+		final float xPos = intent.getFloatExtra("xPos", -1);
+		final float yPos = intent.getFloatExtra("yPos", -1);
 				
 		lvBeaconList.setOnItemClickListener(new OnItemClickListener(){
 			@Override
@@ -122,7 +122,7 @@ public class BeaconsActivity extends ActionBarActivity implements BeaconConsumer
 		beaconManager.getBeaconParsers().add(new BeaconParser().
 	               setBeaconLayout("m:0-3=4c000215,i:4-19,i:20-21,i:22-23,p:24-24"));
 		
-		// scan for new updates every 1500 milliseconds to allow selecting beacons with more ease....
+		// scan for new updates every 1500 milliseconds (not affected by settings) to allow selecting beacons with more ease....
 		beaconManager.setForegroundScanPeriod(1500);
 		beaconManager.setForegroundBetweenScanPeriod(0);
 		

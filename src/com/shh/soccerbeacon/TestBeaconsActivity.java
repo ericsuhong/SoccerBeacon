@@ -46,11 +46,16 @@ public class TestBeaconsActivity extends ActionBarActivity implements BeaconCons
 		setContentView(R.layout.activity_test);
 		
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-		int fieldWidth = sharedPref.getInt("FieldWidth", -1);
-		int fieldHeight = sharedPref.getInt("FieldHeight", -1);
+		
+		// load settings
+		int scanInterval = sharedPref.getInt("ScanInterval", 400);
+		int displayMargin = sharedPref.getInt("DisplayMargin", 10);
+		
+		float fieldWidth = sharedPref.getFloat("FieldWidth", -1);
+		float fieldHeight = sharedPref.getFloat("FieldHeight", -1);
 				
 		fvFieldView = (FieldView) findViewById(R.id.fvFieldView);
-		fvFieldView.setMargin(150);	
+		fvFieldView.setMargin(displayMargin);	
 		fvFieldView.setFieldWidth(fieldWidth);
 		fvFieldView.setFieldHeight(fieldHeight);
 		
@@ -71,10 +76,10 @@ public class TestBeaconsActivity extends ActionBarActivity implements BeaconCons
 		
 		// scan for new updates every 500 milliseconds
 		// default is 1100 milliseconds...
-		beaconManager.setForegroundScanPeriod(500);
+		beaconManager.setForegroundScanPeriod(scanInterval);
 		beaconManager.setForegroundBetweenScanPeriod(0);
 		
-		beaconManager.setBackgroundScanPeriod(500);
+		beaconManager.setBackgroundScanPeriod(scanInterval);
 		beaconManager.setBackgroundBetweenScanPeriod(0);
 		
 		beaconManager.bind(this);	

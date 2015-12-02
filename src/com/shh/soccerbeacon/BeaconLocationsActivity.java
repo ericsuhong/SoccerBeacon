@@ -12,7 +12,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.shh.soccerbeacon.adapter.BeaconLocationsListAdapter;
 import com.shh.soccerbeacon.dto.BeaconLocationItem;
-import com.shh.soccerbeacon.dto.FieldData;
 
 import android.support.v7.app.ActionBarActivity;
 import android.text.InputType;
@@ -44,6 +43,8 @@ public class BeaconLocationsActivity extends ActionBarActivity
 	BeaconLocationsListAdapter beaconLocationsListAdapter;
 	EditText etXpos, etYpos;
 	Button btnAddBeacon;	
+	
+	private int runningSumCount = 10;
 		
 	@SuppressWarnings("unchecked")
 	@Override
@@ -60,6 +61,9 @@ public class BeaconLocationsActivity extends ActionBarActivity
 		etYpos = (EditText) findViewById(R.id.etYpos);		
 		
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+		
+		runningSumCount = sharedPref.getInt("RunningSumCount", -1);
+
 		String beaconLocationsJSON = sharedPref.getString("BeaconLocations", "[]");
 			
 		Gson gson = new Gson();
@@ -88,8 +92,8 @@ public class BeaconLocationsActivity extends ActionBarActivity
 					return;
 				}
 				
-				int xPos_int = Integer.parseInt(xPos);
-				int yPos_int = Integer.parseInt(yPos);
+				float xPos_int = Float.parseFloat(xPos);
+				float yPos_int = Float.parseFloat(yPos);
 				
 				if (xPos_int < 0)
 				{
@@ -104,18 +108,18 @@ public class BeaconLocationsActivity extends ActionBarActivity
 				}
 				
 				SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
-				int fieldWidth = sharedPref.getInt("FieldWidth", -1);
-				int fieldHeight = sharedPref.getInt("FieldHeight", -1);
+				float fieldWidth = sharedPref.getFloat("FieldWidth", -1f);
+				float fieldHeight = sharedPref.getFloat("FieldHeight", -1f);
 				
 				if (xPos_int > fieldWidth)
 				{
-					etXpos.setError("X coordinate must be <= " + fieldWidth);
+					etXpos.setError("X coordinate must be <= " + String.format("%.3f", fieldWidth));
 					return;
 				}
 				
 				if (yPos_int > fieldHeight)
 				{
-					etYpos.setError("Y coordinate must be <= " + fieldHeight);
+					etYpos.setError("Y coordinate must be <= " + String.format("%.3f", fieldWidth));
 					return;
 				}
 				
@@ -150,13 +154,13 @@ public class BeaconLocationsActivity extends ActionBarActivity
 	    if (requestCode == 1) {
 	        if (resultCode == RESULT_OK) 
 	        {
-	        	int xPos = data.getIntExtra("xPos", -1);
-	        	int yPos = data.getIntExtra("yPos", -1);
+	        	float xPos = data.getFloatExtra("xPos", -1);
+	        	float yPos = data.getFloatExtra("yPos", -1);
 	        	String beaconName = data.getStringExtra("beaconName");
 	        	int beaconMajor = data.getIntExtra("beaconMajor", -1);
 	        	int beaconMinor = data.getIntExtra("beaconMinor", -1);
 	        	
-	        	BeaconLocationItem item = new BeaconLocationItem(xPos, yPos, beaconName, beaconMajor, beaconMinor);
+	        	BeaconLocationItem item = new BeaconLocationItem(xPos, yPos, beaconName, beaconMajor, beaconMinor, runningSumCount);
 	        	beaconLocationsList.add(item);
 	        	
 	        	Collections.sort(beaconLocationsList);

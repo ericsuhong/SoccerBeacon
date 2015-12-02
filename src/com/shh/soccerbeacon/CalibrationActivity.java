@@ -22,8 +22,10 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -83,6 +85,7 @@ public class CalibrationActivity extends ActionBarActivity implements BeaconCons
 			y[i] = 0;
 		}
 		
+		// debug test values...
 		y[0] = 58.2903;
 		y[1] = 66.2258;
 		y[2] = 72.4193;
@@ -158,6 +161,13 @@ public class CalibrationActivity extends ActionBarActivity implements BeaconCons
 			buttonArray.get(i).setOnClickListener(this);
 		}		
 		
+		
+		// get scan interval from settings to set calibration scan interval
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+		
+		// set default setting values
+		int scanInterval = sharedPref.getInt("ScanInterval", 500);	
+		
 		beaconManager = BeaconManager.getInstanceForApplication(this);
 		
 		// add iBeacon Layout
@@ -165,10 +175,10 @@ public class CalibrationActivity extends ActionBarActivity implements BeaconCons
 	               setBeaconLayout("m:0-3=4c000215,i:4-19,i:20-21,i:22-23,p:24-24"));
 		
 		// calibrate every 500ms
-		beaconManager.setForegroundScanPeriod(500);
+		beaconManager.setForegroundScanPeriod(scanInterval);
 		beaconManager.setForegroundBetweenScanPeriod(0);
 		
-		beaconManager.setBackgroundScanPeriod(500);
+		beaconManager.setBackgroundScanPeriod(scanInterval);
 		beaconManager.setBackgroundBetweenScanPeriod(0);
 	}
 	

@@ -1,14 +1,5 @@
 package com.shh.soccerbeacon;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.shh.soccerbeacon.dto.BeaconLocationItem;
-import com.shh.soccerbeacon.dto.FieldData;
-
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
@@ -44,8 +35,8 @@ public class FieldDimensionsActivity extends ActionBarActivity
 		btnSetDimensions = (Button) findViewById(R.id.btnSetDimensions);
 		
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-		int fieldWidth = sharedPref.getInt("FieldWidth", -1);
-		int fieldHeight = sharedPref.getInt("FieldHeight", -1);
+		float fieldWidth = sharedPref.getFloat("FieldWidth", -1f);
+		float fieldHeight = sharedPref.getFloat("FieldHeight", -1f);
 		
 		if (fieldWidth != -1)
 			etFieldWidth.setText(fieldWidth + "");
@@ -72,16 +63,16 @@ public class FieldDimensionsActivity extends ActionBarActivity
 					return;
 				}
 				
-				int fieldWidth_int = Integer.parseInt(fieldWidth);
-				int fieldHeight_int = Integer.parseInt(fieldHeight);
+				float fieldWidth_float = Float.parseFloat(fieldWidth);
+				float fieldHeight_float = Float.parseFloat(fieldHeight);
 				
-				if (fieldWidth_int <= 0)
+				if (fieldWidth_float <= 0)
 				{
 					etFieldWidth.setError("Field Width must be greater than 0");
 					return;
 				}
 				
-				if (fieldHeight_int <= 0)
+				if (fieldHeight_float <= 0)
 				{
 					etFieldHeight.setError("Field Height must be greater than 0");
 					return;
@@ -90,8 +81,8 @@ public class FieldDimensionsActivity extends ActionBarActivity
 				SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
 				SharedPreferences.Editor editor = sharedPref.edit();
 				editor.putString("BeaconLocations", "[]"); // clear beacon locations
-				editor.putInt("FieldWidth", fieldWidth_int);
-				editor.putInt("FieldHeight", fieldHeight_int);
+				editor.putFloat("FieldWidth", fieldWidth_float);
+				editor.putFloat("FieldHeight", fieldHeight_float);
 				editor.commit();
 								
 				finish();

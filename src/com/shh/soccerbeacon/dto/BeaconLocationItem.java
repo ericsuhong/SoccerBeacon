@@ -6,8 +6,8 @@ import android.util.Log;
 
 public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 {
-	private int xPos;
-	private int yPos;
+	private float xPos;
+	private float yPos;
 	private String beaconName;
 	private int major;
 	private int minor;
@@ -17,19 +17,23 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 	private int RSSI = 0;
 	
 	private float distance = -1;
+	
+	private int runningSumCount = -1;
 
 	// calibration data
 	private boolean calibrated = false;
 	private double calibrationA;
 	private double calibrationB;
 
-	public BeaconLocationItem(int xPos, int yPos, String beaconName, int major, int minor)
+	public BeaconLocationItem(float xPos, float yPos, String beaconName, int major, int minor, int runningSumCount)
 	{
 		this.xPos = xPos;
 		this.yPos = yPos;
 		this.beaconName = beaconName;
 		this.major = major;
 		this.minor = minor;
+		
+		this.runningSumCount = runningSumCount;
 	}
 
 	public String getBeaconName() {
@@ -49,7 +53,7 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 		if (RSSIArray == null)
 			RSSIArray = new ArrayList<Integer>();
 		
-		if (RSSIArray.size() >= 4)
+		if (RSSIArray.size() >= this.runningSumCount)
 		{
 			RSSIArray.remove(0);
 		}
@@ -74,15 +78,15 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 		this.minor = minor;
 	}
 	
-	public int getX() {
+	public float getX() {
 		return xPos;
 	}
 
-	public void setX(int xPos) {
+	public void setX(float xPos) {
 		this.xPos = xPos;
 	}
 
-	public int getY() {
+	public float getY() {
 		return yPos;
 	}
 
@@ -172,7 +176,7 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 			runningSum += RSSIArray.get(i);
 		}
 		
-		avgRSSI = (float) runningSum / RSSIArray.size();
+		avgRSSI = ((float) runningSum) / RSSIArray.size();
 		
 		return (distanceFunction(avgRSSI));
 	}

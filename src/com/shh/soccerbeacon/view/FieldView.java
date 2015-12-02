@@ -3,6 +3,7 @@ package com.shh.soccerbeacon.view;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Random;
 
 import com.shh.soccerbeacon.R;
 import com.shh.soccerbeacon.dto.BeaconLocationItem;
@@ -20,17 +21,18 @@ public class FieldView extends View
 {
 	private int margin = 0;
 	
-	private int fieldWidth = -1;
-	private int fieldHeight = -1;
+	private float fieldWidth = -1;
+	private float fieldHeight = -1;
 	
 	String fieldColor = "#35AE2F";
 	String beaconColor = "#EEEEEE";
 	String beaconRangeColor = "#000000";
-	String debugPosColor = "#FF00FF";
+	String debugPosColor = "#00FFFF";
+	String oldPosColor = "#FF0000";
 	String currentPosColor = "#FFFF00";
-	
+
 	float beaconRadius = 12;
-	float currentPosRadius = 12;
+	float currentPosRadius = 5;
 	float debugPosRadius = 5;
 	
 	int bitmapWidth = 0;
@@ -48,10 +50,16 @@ public class FieldView extends View
 	Paint beaconPaint;
 	Paint textPaint;
 	Paint beaconRangePaint;
+	Paint oldPosPaint;
 	Paint currentPosPaint;
 	Paint debugPosPaint;
 
 	private boolean closestBeaconFirst = true;
+	
+	ArrayList<Float> xList = new ArrayList<Float>();
+	ArrayList<Float> yList = new ArrayList<Float>();
+	
+	int count = 0;
 	
     public FieldView(Context context, AttributeSet attrs) 
     {
@@ -72,6 +80,9 @@ public class FieldView extends View
 		beaconRangePaint.setStyle(Paint.Style.STROKE);
 		beaconRangePaint.setStrokeWidth(4f);
 				
+		oldPosPaint = new Paint();
+		oldPosPaint.setColor(Color.parseColor(oldPosColor));
+		
 		currentPosPaint = new Paint();
 		currentPosPaint.setColor(Color.parseColor(currentPosColor));
 		
@@ -230,7 +241,7 @@ public class FieldView extends View
 	    				   //Log.i("BEACON", "py1_neg, py1_pos: " + py1_neg + ", " + py1_pos);
     					   //Log.i("BEACON", "px1_neg, px1_pos: " + px1_neg + ", " + px1_pos);
 	    				   
-	    				   if (showDebug)
+	    				   if (showRange && showDebug)
     					   {
 	    					   canvas.drawCircle(calculateAdjustedX(px1_neg), calculateAdjustedY(py1_neg), debugPosRadius, debugPosPaint);	    					   
 	    					   canvas.drawCircle(calculateAdjustedX(px1_pos), calculateAdjustedY(py1_pos), debugPosRadius, debugPosPaint);	
@@ -544,9 +555,7 @@ public class FieldView extends View
 	    				   }
 	    				   // two circles lie outside of each other
 	    				   else
-	    				   {
-	    					   Log.i("BEACON", "Two circles LIE OUTSIDE OF EACH OTHER");
-	    					   
+	    				   {	    					   
 	    					   // line that goes throught two center points: y = mx + c
 	    					   double m = (y2-y1)/(x2-x1);  
 	    					   double c = y1 - m*x1;
@@ -588,7 +597,6 @@ public class FieldView extends View
 	    					   }
 	    					   else
 	    					   {
-	    						   Log.i("BEACON", "LIE OUTSIDE SLOPE IS INFINITE!!");
 	    						   px1_neg = px1_pos = (float) x1;
 	    						   px2_neg = px2_pos = (float) x1;
 	    						   
@@ -775,11 +783,36 @@ public class FieldView extends View
 				   }
 	    	   }    	   
 	    	   
+	    	   count++;
+	    	   
+	    	   /*
+	    	   if (count % 2 == 0)
+	    	   {
+	    		   Random rand = new Random();
+		    	   pointX = rand.nextFloat()*(fieldWidth+10)-5;
+		    	   pointY = rand.nextFloat()*(fieldHeight+10)-5;	    		   
+	    	   }
+	    	   else
+	    	   {
+	    		   Random rand = new Random();
+		    	   pointX = rand.nextFloat()*(20);
+		    	   pointY = rand.nextFloat()*(fieldHeight);	
+	    	   }*/
+	    	   
 	    	   if (pointX != -1 && pointY != -1)
-	    	   {	    		   
-		    	   // first point is now available...
-		    	   canvas.drawCircle(calculateAdjustedX(pointX), calculateAdjustedY(pointY), currentPosRadius, currentPosPaint);
-	    	   }	    	   
+	    	   {	    		
+	    		   xList.add(pointX);
+		    	   yList.add(pointY);
+	    	   }	    	   	    	   
+	    	  	
+	    	   // draw all circles gathered so far...
+	    	   for (int j = 0; j < xList.size(); j++)
+	    	   {
+	    		   if (j == xList.size()-1)
+	    			   canvas.drawCircle(calculateAdjustedX(xList.get(j)), calculateAdjustedY(yList.get(j)), currentPosRadius, currentPosPaint);
+	    		   else
+	    			   canvas.drawCircle(calculateAdjustedX(xList.get(j)), calculateAdjustedY(yList.get(j)), currentPosRadius, oldPosPaint);
+	    	   }    	   
 	    	   
 	    	   // first point is now available...
 	    	   //canvas.drawCircle(calculateAdjustedX(pointX), calculateAdjustedY(pointY), currentPosRadius, currentPosPaint);   
@@ -795,19 +828,19 @@ public class FieldView extends View
 		this.margin = margin;
 	}
 
-	public int getFieldWidth() {
+	public float getFieldWidth() {
 		return fieldWidth;
 	}
 
-	public void setFieldWidth(int fieldWidth) {
+	public void setFieldWidth(float fieldWidth) {
 		this.fieldWidth = fieldWidth;
 	}
 
-	public int getFieldHeight() {
+	public float getFieldHeight() {
 		return fieldHeight;
 	}
 
-	public void setFieldHeight(int fieldHeight) {
+	public void setFieldHeight(float fieldHeight) {
 		this.fieldHeight = fieldHeight;
 	}
 
