@@ -42,9 +42,9 @@ public class FieldView extends View
 	int bitmapWidth = 0;
 	int bitmapHeight = 0;
 	
-	boolean showBeacons = true;
 	boolean showRange = true;
-	boolean showInfo = true;
+	boolean showBeaconName = true;
+	boolean showBeaconInfo = true;
 	
 	ArrayList<BeaconLocationItem> beaconLocationsList;
 	
@@ -132,14 +132,15 @@ public class FieldView extends View
 	    	   for (int i = 0 ; i < beaconLocationsList.size(); i++)
 	    	   {	    		   
 	    		   BeaconLocationItem beacon = beaconLocationsList.get(i);
-	    		   
-	    		   if (showBeacons)
+	    		   canvas.drawCircle(calculateAdjustedX(beacon.getX()), calculateAdjustedY(beacon.getY()), beaconRadius, beaconPaint);  		   
+	
+
+	    		   if (showBeaconInfo)
 	    		   {
-		    		   canvas.drawCircle(calculateAdjustedX(beacon.getX()), calculateAdjustedY(beacon.getY()), beaconRadius, beaconPaint);  		   
-		    		   canvas.drawText(beacon.getBeaconName(), calculateAdjustedX(beacon.getX()), calculateAdjustedY(beacon.getY()) + fontSize, textPaint); 
+		    		   canvas.drawText(beacon.getBeaconName(), calculateAdjustedX(beacon.getX()), calculateAdjustedY(beacon.getY()) + fontSize, textPaint);
 	    		   }
 	    		   
-	    		   if (showInfo)
+	    		   if (showBeaconInfo)
 	    		   {
 	    			   if (beacon.getRSSI() != 0)
 	    				   canvas.drawText("" + beacon.getRSSI() + ", " + String.format("%.3f", beacon.getDistance()) + "m", calculateAdjustedX(beacon.getX()), calculateAdjustedY(beacon.getY()) + 2*fontSize, textPaint); 
@@ -656,12 +657,6 @@ public class FieldView extends View
 	    						   intersect_y2 = py2_pos;
 	    					   }
 	    					   
-	    					   if (showInfo)
-	    					   {
-		    					   canvas.drawCircle(calculateAdjustedX(intersect_x1), calculateAdjustedY(intersect_y1), debugPosRadius, highlightPaint);	    					   
-		    					   canvas.drawCircle(calculateAdjustedX(intersect_x2), calculateAdjustedY(intersect_y2), debugPosRadius, highlightPaint);	    					   
-	    					   }
-	    					   
 	    					   currentX = (intersect_x1 + intersect_x2)/2;
     						   currentY = (intersect_y1 + intersect_y2)/2;
 	    					   
@@ -883,6 +878,16 @@ public class FieldView extends View
 		float scaledX = x * scaleFactor;
 		
 		return ((bitmapWidth-2*margin)-fieldWidth*scaleFactor)/2 + scaledX + margin;
+	}
+	
+	public void setShowRange(boolean showRange)
+	{
+		this.showRange = showRange;		
+	}
+	
+	public void setShowBeaconInfo(boolean showBeaconInfo)
+	{
+		this.showBeaconInfo = showBeaconInfo;		
 	}
 	
 	public float calculateAdjustedY(float y)

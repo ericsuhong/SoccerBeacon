@@ -22,7 +22,15 @@
 		             android:id="@+id/option_show_circles"
 		             android:checked="true"
 		             android:title="Show Range Circles" />
+		         <item
+		             android:id="@+id/option_show_beacon_info"
+		             android:checked="true"
+		             android:title="Show Beacon Info" />
+		         <item
+		             android:id="@+id/option_show_calibration_pane"
+		             android:checked="true"
+		             android:title="Show Calibration Pane" />
 		     </group>
-	     </menu>
+	     </menu>        
      </item>
 </menu>

@@ -148,14 +148,15 @@ public class TestBeaconsActivity extends ActionBarActivity implements BeaconCons
 		}
 		else if (id == R.id.option_show_circles) 
 		{
-			if (item.isChecked())
-			{	
-				item.setChecked(false);
-			}
-			else
-			{
-				item.setChecked(true);
-			}
+			fvFieldView.setShowRange(!item.isChecked());
+			item.setChecked(!item.isChecked());
+			
+			return true;
+		}
+		else if (id == R.id.option_show_beacon_info) 
+		{
+			fvFieldView.setShowBeaconInfo(!item.isChecked());
+			item.setChecked(!item.isChecked());
 			
 			return true;
 		}
