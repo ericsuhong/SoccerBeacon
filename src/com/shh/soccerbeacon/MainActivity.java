@@ -60,7 +60,7 @@ public class MainActivity extends ActionBarActivity
 		int displayMargin = sharedPref.getInt("DisplayMargin", 10);
 		int scanInterval = sharedPref.getInt("ScanInterval", 400);
 		int runningSumCount = sharedPref.getInt("RunningSumCount", 10);
-		float outlierDistance = sharedPref.getFloat("OutlierDistance", 3f);
+		float outlierTrimDistance = sharedPref.getFloat("OutlierTrimDistance", 2f);
 		float outlierTrimFactor = sharedPref.getFloat("OutlierTrimFactor", 0.5f);
 		boolean useClosestBeacon = sharedPref.getBoolean("UseClosestBeacon", true);
 		float fieldWidth = sharedPref.getFloat("FieldWidth", -1f);
@@ -71,7 +71,7 @@ public class MainActivity extends ActionBarActivity
 		editor.putInt("DisplayMargin", displayMargin);
 		editor.putInt("ScanInterval", scanInterval);
 		editor.putInt("RunningSumCount", runningSumCount);
-		editor.putFloat("OutlierDistance", outlierDistance);
+		editor.putFloat("OutlierTrimDistance", outlierTrimDistance);
 		editor.putFloat("OutlierTrimFactor", outlierTrimFactor);
 		editor.putBoolean("useClosestBeacon", useClosestBeacon);
 		editor.putFloat("FieldWidth", fieldWidth);

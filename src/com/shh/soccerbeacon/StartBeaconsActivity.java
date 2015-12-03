@@ -68,7 +68,7 @@ public class StartBeaconsActivity extends ActionBarActivity implements BeaconCon
 		// load settings
 		int scanInterval = sharedPref.getInt("ScanInterval", 400);
 		int runningSumCount = sharedPref.getInt("RunningSumCount", -1);
-		float outlierDistance = sharedPref.getFloat("OutlierDistance", 3);
+		float outlierTrimDistance = sharedPref.getFloat("OutlierTrimDistance", 2);
 		float outlierTrimFactor = sharedPref.getFloat("OutlierTrimFactor", 0.5f);
 		boolean useClosestBeacon = sharedPref.getBoolean("UseClosestBeacon", true);
 		
@@ -79,7 +79,7 @@ public class StartBeaconsActivity extends ActionBarActivity implements BeaconCon
 				
 		fvFieldView = (FieldView) findViewById(R.id.fvFieldView);
 		fvFieldView.setMargin(displayMargin);	
-		fvFieldView.setOutlierDistance(outlierDistance);
+		fvFieldView.setOutlierTrimDistance(outlierTrimDistance);
 		fvFieldView.setOutlierTrimFactor(outlierTrimFactor);	
 		fvFieldView.setUseClosestBeacon(useClosestBeacon);
 		fvFieldView.setFieldWidth(fieldWidth);

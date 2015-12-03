@@ -21,8 +21,8 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 	private int runningSumCount = -1;
 
 	// TWO DEFAULT CALIBRATION PARAMETERS
-	private double defaultA = -56;
-	private double defaultB = -11;
+	private double defaultA = -60;
+	private double defaultB = -12;
 
 	// manual calibration data
 	private boolean isManual = false;
@@ -183,12 +183,10 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 		if (isManual)
 		{			
 			distance = (float) Math.exp((RSSI-manualA-shiftC)/manualB);
-			Log.i("BEACON",  "manualA: " + manualA + ", manualB: " + manualB + ", shiftC: " + shiftC + ", DISTANCE: " + distance);		
 		}
 		else
 		{
 			distance = (float) Math.exp((RSSI-defaultA-shiftC)/defaultB);
-			Log.i("BEACON", "DISTANCE: " + distance + ", RSSI: " + RSSI + " defaultA: " + defaultA + ", defaultB: " + defaultB + ", shiftC: " + shiftC);		
 		}
 								
 		if (distance < 0)

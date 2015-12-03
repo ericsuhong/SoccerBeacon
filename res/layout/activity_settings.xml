@@ -77,10 +77,10 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Outlier Distance Threshold(m):" />
+            android:text="Outlier Trim Threshold(m):" />
 
         <EditText
-            android:id="@+id/etOutlierDistance"
+            android:id="@+id/etOutlierTrimDistance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"

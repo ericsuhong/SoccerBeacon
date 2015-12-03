@@ -21,7 +21,7 @@ public class FieldView extends View
 {
 	private int margin = 0;
 	private boolean useClosestBeacon = true;
-	private float outlierDistance = 3;
+	private float outlierTrimDistance = 2;
 	private float outlierTrimFactor = 0.5f;
 	
 	private float fieldWidth = -1;
@@ -33,6 +33,7 @@ public class FieldView extends View
 	String highlightColor = "#00FFFF";
 	String oldPosColor = "#FF0000";
 	String currentPosColor = "#FFFF00";
+	String outlierColor = "#0000FF";
 
 	float beaconRadius = 12;
 	float currentPosRadius = 7;
@@ -61,7 +62,7 @@ public class FieldView extends View
 	ArrayList<Float> yList = new ArrayList<Float>();
 		
 	boolean isPlaying = false;
-			
+				
     public FieldView(Context context, AttributeSet attrs) 
     {
         super(context, attrs);
@@ -86,7 +87,7 @@ public class FieldView extends View
 		
 		currentPosPaint = new Paint();
 		currentPosPaint.setColor(Color.parseColor(currentPosColor));
-		
+
 		highlightPaint = new Paint();
 		highlightPaint.setColor(Color.parseColor(highlightColor));
 		highlightPaint.setStyle(Paint.Style.STROKE);
@@ -786,13 +787,8 @@ public class FieldView extends View
 	    		   
 	    		   float distancePrevCurrent = (float) Math.sqrt(Math.abs(prevX - currentX)*Math.abs(prevX - currentX) + Math.abs(prevY - currentY)*Math.abs(prevY - currentY));
 	    		   
-	    		   // trim the outlier if it is above or equal to the threshold
-	    		   if (distancePrevCurrent >= this.outlierDistance)
+	    		   if (distancePrevCurrent >= this.outlierTrimDistance)
 	    		   {
-	    			   //Log.i("TRIM", "TRIMMING!!!");
-	    			   //Log.i("TRIM", "PrevX, PrevY: " + prevX + ", " + prevY);
-	    			   //Log.i("TRIM", "CurrX, CurrY: " + currentX + ", " + currentY);
-
 	    			   currentX = (float) ((currentX - prevX)*this.outlierTrimFactor + prevX);
 	    			   currentY = (float) ((currentY - prevY)*this.outlierTrimFactor + prevY);
 	    			   
@@ -836,8 +832,8 @@ public class FieldView extends View
 		this.margin = margin;
 	}
 	
-	public void setOutlierDistance(float outlierDistance) {
-		this.outlierDistance = outlierDistance;
+	public void setOutlierTrimDistance(float outlierTrimDistance) {
+		this.outlierTrimDistance = outlierTrimDistance;
 	}
 	
 	public void setOutlierTrimFactor(float outlierTrimFactor) {
