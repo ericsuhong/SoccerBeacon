@@ -55,7 +55,7 @@
         </activity>        
         <activity
             android:name=".StartBeaconsActivity"
-            android:label="Test Beacons"
+            android:label="Track Location"
             android:screenOrientation="landscape" >
         </activity>
     </application>

@@ -59,7 +59,7 @@ public class StartBeaconsActivity extends ActionBarActivity implements BeaconCon
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_test);
+		setContentView(R.layout.activity_start);
 		
 		lvCalibrationPane = (ListView) findViewById(R.id.lvCalibrationPane);
 		

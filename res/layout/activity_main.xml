@@ -65,11 +65,11 @@
               android:layout_margin="5dp" >
 
               <Button
-                  android:id="@+id/btnGo"
+                  android:id="@+id/btnStart"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:layout_weight="1"
-                  android:text="GO!" />
+                  android:text="Start" />
 
           </LinearLayout>
 

@@ -39,7 +39,7 @@ public class MainActivity extends ActionBarActivity
 	private Button btnSetFieldDimensions;
 	private Button btnCalibrateBeacons;
 
-	private Button btnGo;
+	private Button btnStart;
 	
 	ArrayList<BeaconLocationItem> beaconLocationsList;
 	
@@ -115,9 +115,9 @@ public class MainActivity extends ActionBarActivity
 			}
 		});
 						
-		btnGo = (Button) findViewById(R.id.btnGo);
+		btnStart = (Button) findViewById(R.id.btnStart);
 		
-		btnGo.setOnClickListener(new OnClickListener(){
+		btnStart.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(mContext, StartBeaconsActivity.class);
@@ -141,7 +141,7 @@ public class MainActivity extends ActionBarActivity
 		if (fieldWidth == -1 && fieldHeight == -1)
 		{
 			btnSetBeaconLocations.setEnabled(false);
-			btnGo.setEnabled(false);
+			btnStart.setEnabled(false);
 			
 			tvFieldWidth.setText("Field Dimensions are not set");			
 		}
@@ -162,12 +162,12 @@ public class MainActivity extends ActionBarActivity
 		if (beaconLocationsList.size() < 1)
 		{
 			btnCalibrateBeacons.setEnabled(false);
-			btnGo.setEnabled(false);
+			btnStart.setEnabled(false);
 		}
 		else
 		{
 			btnCalibrateBeacons.setEnabled(true);
-			btnGo.setEnabled(true);
+			btnStart.setEnabled(true);
 		}
 		
 		fvFieldView.setBeaconLocationsList(beaconLocationsList);
