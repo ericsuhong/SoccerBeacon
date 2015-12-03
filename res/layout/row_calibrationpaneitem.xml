@@ -1,0 +1,156 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" 
+    android:padding="10dp" >
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.3"
+        android:orientation="vertical" >
+    
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content">
+	
+	        <TextView
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="("
+	            android:textColor="#000000"
+	            android:textSize="16dp"
+	            android:textStyle="bold" />
+	        
+	        <TextView
+	            android:id="@+id/tvBeaconXpos"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="X"
+	            android:textColor="#000000"
+	            android:textSize="16dp"
+	            android:textStyle="bold" />
+	        
+	         <TextView
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text=", "
+	            android:textColor="#000000" 
+	            android:textSize="16dp"
+	            android:textStyle="bold"/>
+	         
+	          <TextView
+	            android:id="@+id/tvBeaconYpos"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="Y"
+	            android:textColor="#000000"
+	            android:textSize="16dp"
+	            android:textStyle="bold" />
+	        
+	         <TextView
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text=")"
+	            android:textColor="#000000" 
+	            android:textSize="16dp"
+	            android:textStyle="bold"/>
+	    </LinearLayout>
+	    
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content">
+	        
+	        <TextView
+	            android:id="@+id/tvBeaconName"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="A123SZ"
+	            android:textColor="#000000" />
+	
+	    </LinearLayout>
+	    
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:visibility="gone">
+	        
+	        <TextView
+	            android:id="@+id/tvBeaconMajor"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="42322"
+	            android:textColor="#000000" />
+	        <TextView
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text=", "
+	            android:textColor="#000000" />
+	        <TextView
+	            android:id="@+id/tvBeaconMinor"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="7929"
+	            android:textColor="#000000" />
+	    </LinearLayout>
+	    
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content">
+	    </LinearLayout>
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.15"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.2" >
+
+            <TextView
+                android:id="@+id/tvCalibrationC"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="+2"
+                android:textColor="#000000"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+
+	 </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.35"
+        android:orientation="vertical" >
+        
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal" >
+	
+	        <Button
+	            android:id="@+id/btnPlus"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:text="+" />
+	        
+	        <Button
+	            android:id="@+id/btnMinus"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:text="-" />
+	        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

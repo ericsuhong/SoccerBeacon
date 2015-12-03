@@ -10,5 +10,6 @@
     <string name="action_screenshot">Screenshot</string>
     <string name="action_usedefault">Use Default</string>
     <string name="action_submit">Submit</string>
+    <string name="action_viewoption">View Option</string>
 
 </resources>

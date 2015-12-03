@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Random;
 
@@ -19,6 +20,8 @@ import org.altbeacon.beacon.Region;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.shh.soccerbeacon.adapter.CalibrateListAdapter;
+import com.shh.soccerbeacon.adapter.CalibrationPaneAdapter;
 import com.shh.soccerbeacon.dto.BeaconListItem;
 import com.shh.soccerbeacon.dto.BeaconLocationItem;
 import com.shh.soccerbeacon.view.FieldView;
@@ -28,6 +31,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.Toast;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
@@ -38,18 +42,26 @@ import android.os.Environment;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 
-public class TestBeaconsActivity extends ActionBarActivity implements BeaconConsumer
+public class StartBeaconsActivity extends ActionBarActivity implements BeaconConsumer
 {	
 	FieldView fvFieldView;
 	
 	ArrayList<BeaconLocationItem> beaconLocationsList;
 	
 	private BeaconManager beaconManager;
-		
+	
+	ListView lvCalibrationPane;
+	CalibrationPaneAdapter calibrationPaneAdapter;
+	
+	boolean isPlaying = false;
+	boolean showingCalibrationPane = false;	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_test);
+		
+		lvCalibrationPane = (ListView) findViewById(R.id.lvCalibrationPane);
 		
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 		
@@ -85,6 +97,61 @@ public class TestBeaconsActivity extends ActionBarActivity implements BeaconCons
 			beaconLocationsList.get(i).setRunningSumCount(runningSumCount);
 		}
 		
+		// sort by coordinates first
+		Collections.sort(beaconLocationsList, new Comparator<BeaconLocationItem>()
+    			{
+    	            public int compare(BeaconLocationItem b1, BeaconLocationItem b2) 
+    	            {
+    	            	if (b1.getY() > b2.getY())
+    	    			{
+    	    				return 1;
+    	    			}
+    	    			else if (b1.getY() == b2.getY())
+    	    			{
+    	    				if (b1.getX() > b2.getX() )
+    	    					return 1;
+    	    				else if (b1.getX()  == b2.getX() )
+    	    					return 0;
+    	    				else
+    	    					return -1;
+    	    			}
+    	    			else
+    	    			{
+    	    				return -1;
+    	    			}		   	
+    	            }
+    	        });
+		
+		
+		ArrayList<BeaconLocationItem> clonedList = (ArrayList<BeaconLocationItem>) beaconLocationsList.clone();
+		
+		Collections.sort(clonedList, new Comparator<BeaconLocationItem>()
+    			{
+    	            public int compare(BeaconLocationItem b1, BeaconLocationItem b2) 
+    	            {
+    	            	if (b1.getY() > b2.getY())
+    	    			{
+    	    				return 1;
+    	    			}
+    	    			else if (b1.getY() == b2.getY())
+    	    			{
+    	    				if (b1.getX() > b2.getX() )
+    	    					return 1;
+    	    				else if (b1.getX()  == b2.getX() )
+    	    					return 0;
+    	    				else
+    	    					return -1;
+    	    			}
+    	    			else
+    	    			{
+    	    				return -1;
+    	    			}		   	
+    	            }
+    	        });
+		
+		calibrationPaneAdapter = new CalibrationPaneAdapter(getApplicationContext(),  clonedList);
+		lvCalibrationPane.setAdapter(calibrationPaneAdapter);
+				
 		fvFieldView.setBeaconLocationsList(beaconLocationsList);	
 		
 		// start listening to the beacons...
@@ -122,14 +189,46 @@ public class TestBeaconsActivity extends ActionBarActivity implements BeaconCons
 	public void onDestroy()
 	{
 		super.onDestroy();
-		
 		beaconManager.unbind(this);
+			
+		//reset information
+		for (int i = 0; i < beaconLocationsList.size(); i++)
+		{
+			BeaconLocationItem item = beaconLocationsList.get(i);		
+			
+			item.clearRSSI();
+			item.setDistance(-1);
+			item.setRunningSumCount(-1);
+		}
+		
+		// save beacon calibration information		
+		String beaconLocationsJSON = new Gson().toJson(beaconLocationsList);
+				
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences.Editor editor = sharedPref.edit();
+		editor.putString("BeaconLocations", beaconLocationsJSON);
+		editor.apply();		
+	}
+	
+	@Override
+    public boolean onPrepareOptionsMenu(Menu menu)
+	{
+		if (isPlaying)
+		{
+			menu.getItem(0).setTitle("STOP");
+		}
+		else
+		{
+			menu.getItem(0).setTitle("START");
+		}
+		
+		return super.onPrepareOptionsMenu(menu);
 	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.testbeacons_menu, menu);
+		getMenuInflater().inflate(R.menu.startbeacons_menu, menu);
 		return true;
 	}
 
@@ -139,7 +238,19 @@ public class TestBeaconsActivity extends ActionBarActivity implements BeaconCons
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-		if (id == R.id.action_screenshot)
+		
+		if (id == R.id.action_start)
+		{
+			isPlaying = !isPlaying;
+			
+			if (isPlaying)
+				fvFieldView.start();
+			else
+				fvFieldView.stop();
+			
+			invalidateOptionsMenu();			
+		}
+		else if (id == R.id.action_screenshot)
 		{
 			takeScreenshot();
 			
@@ -160,7 +271,16 @@ public class TestBeaconsActivity extends ActionBarActivity implements BeaconCons
 			
 			return true;
 		}
-		
+		else if (id == R.id.action_calibrationpane)
+		{
+			if (showingCalibrationPane)
+				lvCalibrationPane.setVisibility(View.GONE);
+			else
+				lvCalibrationPane.setVisibility(View.VISIBLE);
+			
+			showingCalibrationPane = !showingCalibrationPane;
+		}
+				
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -171,7 +291,7 @@ public class TestBeaconsActivity extends ActionBarActivity implements BeaconCons
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) 
             {                 	            	
         		Log.i("BEACON", "Beacon STARTED with size: " + beacons.size());
-        		        		
+
             	if (beacons.size() > 0) 
                 {            		
                 	for (Beacon current_beacon : beacons)

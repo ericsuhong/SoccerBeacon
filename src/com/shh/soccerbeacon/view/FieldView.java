@@ -35,8 +35,7 @@ public class FieldView extends View
 	String currentPosColor = "#FFFF00";
 
 	float beaconRadius = 12;
-	float currentPosRadius = 5;
-	float debugPosRadius = 5;
+	float currentPosRadius = 7;
 	float fontSize = 30;
 	
 	int bitmapWidth = 0;
@@ -60,6 +59,8 @@ public class FieldView extends View
 	
 	ArrayList<Float> xList = new ArrayList<Float>();
 	ArrayList<Float> yList = new ArrayList<Float>();
+		
+	boolean isPlaying = false;
 			
     public FieldView(Context context, AttributeSet attrs) 
     {
@@ -797,22 +798,29 @@ public class FieldView extends View
 	    			   
 	    			   //Log.i("TRIM", "NewX, NewY: " + currentX + ", " + currentY);	    			   
 	    		   }
-	    	   }
-
-	    	   if (currentX != -1 && currentY != -1)
-	    	   {	    		
-	    		   xList.add(currentX);
-		    	   yList.add(currentY);
-	    	   }	    	   	 
+	    	   }    	   	 
 	    	  	
-	    	   // draw all circles gathered so far...
-	    	   for (int j = 0; j < xList.size(); j++)
+	    	   // if playing, add points to the list and draw all circles gathered so far...
+	    	   if (isPlaying)
 	    	   {
-	    		   if (j == xList.size()-1)
-	    			   canvas.drawCircle(calculateAdjustedX(xList.get(j)), calculateAdjustedY(yList.get(j)), currentPosRadius, currentPosPaint);
-	    		   else
-	    			   canvas.drawCircle(calculateAdjustedX(xList.get(j)), calculateAdjustedY(yList.get(j)), currentPosRadius, oldPosPaint);
-	    	   }    	   
+		    	   if (currentX != -1 && currentY != -1)
+		    	   {	    		
+		    		   xList.add(currentX);
+			    	   yList.add(currentY);
+		    	   }	
+	    		   
+		    	   for (int j = 0; j < xList.size(); j++)
+		    	   {
+		    		   if (j == xList.size()-1)
+		    			   canvas.drawCircle(calculateAdjustedX(xList.get(j)), calculateAdjustedY(yList.get(j)), currentPosRadius, currentPosPaint);
+		    		   else
+		    			   canvas.drawCircle(calculateAdjustedX(xList.get(j)), calculateAdjustedY(yList.get(j)), currentPosRadius, oldPosPaint);
+		    	   }
+	    	   }
+	    	   else // otherwise, simply draw current circle
+	    	   {
+    			   canvas.drawCircle(calculateAdjustedX(currentX), calculateAdjustedY(currentY), currentPosRadius, currentPosPaint);
+	    	   }
 	    	   
 	    	   // first point is now available...
 	    	   //canvas.drawCircle(calculateAdjustedX(pointX), calculateAdjustedY(pointY), currentPosRadius, currentPosPaint);   
@@ -901,4 +909,16 @@ public class FieldView extends View
 	{
 		return distance * scaleFactor;
 	}
+
+	public void stop() 
+	{
+		this.isPlaying = false;
+		this.xList.clear();
+		this.yList.clear();
+	}
+
+	public void start() 
+	{
+		this.isPlaying = true;
+	}	
 }

@@ -124,7 +124,7 @@ public class CalibrateListActivity extends ActionBarActivity
 	    		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 	    		SharedPreferences.Editor editor = sharedPref.edit();
 	    		editor.putString("BeaconLocations", beaconLocationsJSON);
-	    		editor.commit();
+	    		editor.apply();
 	        }
 	    }
 	}

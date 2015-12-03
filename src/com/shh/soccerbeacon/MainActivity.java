@@ -39,8 +39,7 @@ public class MainActivity extends ActionBarActivity
 	private Button btnSetFieldDimensions;
 	private Button btnCalibrateBeacons;
 
-	private Button btnStart;
-	private Button btnTest;
+	private Button btnGo;
 	
 	ArrayList<BeaconLocationItem> beaconLocationsList;
 	
@@ -115,15 +114,13 @@ public class MainActivity extends ActionBarActivity
 				startActivity(intent);
 			}
 		});
+						
+		btnGo = (Button) findViewById(R.id.btnGo);
 		
-		btnStart = (Button) findViewById(R.id.btnStart);
-				
-		btnTest = (Button) findViewById(R.id.btnTest);
-		
-		btnTest.setOnClickListener(new OnClickListener(){
+		btnGo.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(mContext, TestBeaconsActivity.class);
+				Intent intent = new Intent(mContext, StartBeaconsActivity.class);
 				startActivity(intent);
 			}
 		});
@@ -144,8 +141,7 @@ public class MainActivity extends ActionBarActivity
 		if (fieldWidth == -1 && fieldHeight == -1)
 		{
 			btnSetBeaconLocations.setEnabled(false);
-			btnStart.setEnabled(false);
-			btnTest.setEnabled(false);
+			btnGo.setEnabled(false);
 			
 			tvFieldWidth.setText("Field Dimensions are not set");			
 		}
@@ -157,7 +153,7 @@ public class MainActivity extends ActionBarActivity
 		}
 		
 		String beaconLocationsJSON = sharedPref.getString("BeaconLocations", "[]");
-			
+					
 		Gson gson = new Gson();
 		Type collectionType = new TypeToken<Collection<BeaconLocationItem>>(){}.getType();
 		beaconLocationsList = (ArrayList<BeaconLocationItem>) gson.fromJson(beaconLocationsJSON, collectionType);
@@ -166,14 +162,12 @@ public class MainActivity extends ActionBarActivity
 		if (beaconLocationsList.size() < 1)
 		{
 			btnCalibrateBeacons.setEnabled(false);
-			btnStart.setEnabled(false);
-			btnTest.setEnabled(false);
+			btnGo.setEnabled(false);
 		}
 		else
 		{
 			btnCalibrateBeacons.setEnabled(true);
-			btnStart.setEnabled(true);
-			btnTest.setEnabled(true);
+			btnGo.setEnabled(true);
 		}
 		
 		fvFieldView.setBeaconLocationsList(beaconLocationsList);

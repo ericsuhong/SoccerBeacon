@@ -5,12 +5,26 @@
     tools:context="com.shh.soccerbeacon.TestBeaconsActivity">
     
     <item
+        android:id="@+id/action_start"
+        android:orderInCategory="100"
+        android:title="START"
+        app:showAsAction="always"/>
+    
+    <item
         android:id="@+id/action_screenshot"
         android:orderInCategory="100"
         android:title="SCREENSHOT"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="always"/>
     
-    <item android:title="View Option"
+    <item
+        android:id="@+id/action_calibrationpane"
+        android:orderInCategory="100"
+        android:title="CALIBRATION"
+        app:showAsAction="always"/>
+    
+    <item 
+        android:title="VIEW OPTION"        
+        android:id="@+id/action_viewoption"
         android:orderInCategory="100"
         app:showAsAction="always">
         <menu>
@@ -26,10 +40,6 @@
 		             android:id="@+id/option_show_beacon_info"
 		             android:checked="true"
 		             android:title="Show Beacon Info" />
-		         <item
-		             android:id="@+id/option_show_calibration_pane"
-		             android:checked="true"
-		             android:title="Show Calibration Pane" />
 		     </group>
 	     </menu>        
      </item>

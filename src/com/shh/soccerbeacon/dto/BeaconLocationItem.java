@@ -21,8 +21,8 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 	private int runningSumCount = -1;
 
 	// TWO DEFAULT CALIBRATION PARAMETERS
-	private double defaultA = -53.35;
-	private double defaultB = -11.84;
+	private double defaultA = -56;
+	private double defaultB = -11;
 
 	// manual calibration data
 	private boolean isManual = false;
@@ -52,20 +52,29 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 		return RSSI;
 	}
 	
+	public void clearRSSI()
+	{
+		RSSIArray = null;
+		this.RSSI = 0;
+	}
+	
 	public void setRSSI(int RSSI) 
 	{
 		if (RSSIArray == null)
 			RSSIArray = new ArrayList<Integer>();
 				
-		if (RSSIArray.size() >= this.runningSumCount)
-		{
-			RSSIArray.remove(0);
+		if (runningSumCount >= 1)
+		{			
+			if (RSSIArray.size() >= this.runningSumCount)
+			{
+				RSSIArray.remove(0);
+			}
+		
+			RSSIArray.add(RSSI);
+			this.RSSI = RSSI;
 		}
-		
-		RSSIArray.add(RSSI);
-		this.RSSI = RSSI;
 	}
-		
+			
 	public int getMajor() {
 		return major;
 	}
@@ -135,7 +144,6 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 		this.shiftC = shiftC;
 	}
 
-
 	public boolean isManual()
 	{
 		return isManual;
@@ -174,17 +182,20 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 		
 		if (isManual)
 		{			
-			distance = (float) Math.exp((RSSI-manualA)/manualB);
+			distance = (float) Math.exp((RSSI-manualA-shiftC)/manualB);
+			Log.i("BEACON",  "manualA: " + manualA + ", manualB: " + manualB + ", shiftC: " + shiftC + ", DISTANCE: " + distance);		
 		}
 		else
 		{
-			distance = (float) Math.exp((RSSI-defaultA)/defaultB);
+			distance = (float) Math.exp((RSSI-defaultA-shiftC)/defaultB);
+			Log.i("BEACON", "DISTANCE: " + distance + ", RSSI: " + RSSI + " defaultA: " + defaultA + ", defaultB: " + defaultB + ", shiftC: " + shiftC);		
 		}
-						
+								
 		if (distance < 0)
 		{
 			return 0.5f;
 		}
+		
 				
 		return distance;
 	}
@@ -196,6 +207,11 @@ public class BeaconLocationItem implements Comparable<BeaconLocationItem>
 			RSSIArray = new ArrayList<Integer>();
 			return -1;
 		}	
+		
+		if (RSSIArray.size() == 0)
+		{
+			return -1;
+		}
 		
 		int runningSum = 0;
 		float avgRSSI = 0;
