@@ -347,7 +347,7 @@ public class StartBeaconsActivity extends ActionBarActivity implements BeaconCon
 
 	    try {
 	        // image naming and path  to include sd card  appending name you choose for file
-	        String mPath = Environment.getExternalStorageDirectory().toString() + "/Pictures/Screenshots/" + now + ".jpg";
+	        String mPath = Environment.getExternalStorageDirectory().toString() + "/Pictures/Screenshots/" + now + ".png";
 
 	        // create bitmap screen capture
 	        View v1 = getWindow().getDecorView().getRootView();
