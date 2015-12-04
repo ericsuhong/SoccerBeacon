@@ -57,11 +57,11 @@ public class MainActivity extends ActionBarActivity
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 		
 		// set default setting values
-		int displayMargin = sharedPref.getInt("DisplayMargin", 10);
-		int scanInterval = sharedPref.getInt("ScanInterval", 400);
-		int runningSumCount = sharedPref.getInt("RunningSumCount", 10);
-		float outlierTrimDistance = sharedPref.getFloat("OutlierTrimDistance", 2f);
-		float outlierTrimFactor = sharedPref.getFloat("OutlierTrimFactor", 0.5f);
+		int displayMargin = sharedPref.getInt("DisplayMargin", 80);
+		int scanInterval = sharedPref.getInt("ScanInterval", 350);
+		int runningSumCount = sharedPref.getInt("RunningSumCount", 7);
+		float outlierTrimDistance = sharedPref.getFloat("OutlierTrimDistance", 2.0f);
+		float outlierTrimFactor = sharedPref.getFloat("OutlierTrimFactor", 0.3f);
 		boolean useClosestBeacon = sharedPref.getBoolean("UseClosestBeacon", true);
 		float fieldWidth = sharedPref.getFloat("FieldWidth", -1f);
 		float fieldHeight = sharedPref.getFloat("FieldHeight", -1f);
