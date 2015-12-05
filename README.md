@@ -1,9 +1,8 @@
 # SoccerBeacon
 CS 6235 Project
 Fall 2015
-
-SoccerBeacons: tracking player movements in a soccer game using iBeacons
-
-An Android application that can be used to track movements of a person in any rectangular-shaped fields.
-
 Suk Hwan Hong (shong38@gatech.edu)
+
+SoccerBeacons: An Android application that can be used to track movements of a person in any rectangular-shaped fields.
+
+Originally built to target soccer fields (hence the name), but can work with any rectangular-shaped fields.
