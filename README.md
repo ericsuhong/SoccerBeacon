@@ -1,6 +1,8 @@
 # SoccerBeacon
 CS 6235 Project
+
 Fall 2015
+
 Suk Hwan Hong (shong38@gatech.edu)
 
 SoccerBeacons: An Android application that can be used to track movements of a person in any rectangular-shaped fields.
